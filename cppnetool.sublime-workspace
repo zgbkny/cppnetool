@@ -1,0 +1,742 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"Channel",
+				"ChannelList"
+			],
+			[
+				"Chan",
+				"ChannelList"
+			],
+			[
+				"lop",
+				"loop_"
+			],
+			[
+				"index",
+				"index_"
+			],
+			[
+				"events",
+				"events_"
+			],
+			[
+				"Event",
+				"EventLoop"
+			],
+			[
+				"read",
+				"readCallback_"
+			],
+			[
+				"thread",
+				"threadFunc2"
+			],
+			[
+				"Thread",
+				"ThreadData"
+			],
+			[
+				"func",
+				"func_"
+			],
+			[
+				"join",
+				"joined_"
+			],
+			[
+				"jo",
+				"joined_"
+			],
+			[
+				"pthread",
+				"pthreadId_"
+			],
+			[
+				"p",
+				"pthreadId_"
+			],
+			[
+				"j",
+				"joined_"
+			],
+			[
+				"start",
+				"started_"
+			],
+			[
+				"listener",
+				"listener_accept"
+			],
+			[
+				"listen",
+				"listener"
+			],
+			[
+				"sp",
+				"spec_idx"
+			],
+			[
+				"spec",
+				"spec_idx"
+			],
+			[
+				"epoll",
+				"epoll_event"
+			],
+			[
+				"_do_",
+				"_do_term"
+			],
+			[
+				"__fd_",
+				"__fd_clr"
+			],
+			[
+				"_do",
+				"_do_poll"
+			],
+			[
+				"FD",
+				"FD_SETSIZE"
+			],
+			[
+				"fd_set",
+				"FD_SETSIZE"
+			],
+			[
+				"cfg",
+				"cfg_maxsock"
+			],
+			[
+				"sele",
+				"select_loop"
+			],
+			[
+				"end",
+				"endif"
+			],
+			[
+				"HAP",
+				"HAPROXY_DEBUG"
+			],
+			[
+				"sin",
+				"sin_addr"
+			],
+			[
+				"exp",
+				"expect_str"
+			],
+			[
+				"ser",
+				"server_id_hdr_name"
+			],
+			[
+				"ERR",
+				"ERR_ALERT"
+			],
+			[
+				"f",
+				"f"
+			],
+			[
+				"d",
+				"tv_update_date"
+			],
+			[
+				"display",
+				"display_build_opts"
+			],
+			[
+				"be",
+				"before"
+			],
+			[
+				"ev",
+				"ev_poll"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "Makefile",
+			"settings":
+			{
+				"buffer_size": 1131,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "examples/cppp/cppp.cc",
+			"settings":
+			{
+				"buffer_size": 157,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "cppnetool/base/Thread.h",
+			"settings":
+			{
+				"buffer_size": 997,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "examples/reactor/reactor_test.cc",
+			"settings":
+			{
+				"buffer_size": 902,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "cppnetool/base/Thread.cc",
+			"settings":
+			{
+				"buffer_size": 1871,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "cppnetool/net/EventLoop.h",
+			"settings":
+			{
+				"buffer_size": 621,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "cppnetool/net/Poller.h",
+			"settings":
+			{
+				"buffer_size": 911,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#include <cppnetool/net/Poller.h>\n\nusing namespace cppnetool::net;\n\nPoller::Poller(EventLoop *loop)\n	: ownerLoop_(loop)\n{\n}\n\nPoller::~Poller()\n{\n\n}\n\nTimestamp Poller::poll(int timeoutMs, ChannelList *activeChannels)\n{\n	int numEvents = ::poll(&*pollfds_.begin(), pollfds_.size(), timeoutMs);\n	Timestamp now(Timestamp::now());\n	if (numEvents > 0) {\n		fillActiveChannels(numEvents, activeChannels);\n	} else if (numEvents == 0) {\n\n	} else {\n\n	}\n	return now;\n}\n\nvoid Poller::fillActiveChannels(int numEvents, ChannelList *activeChannels) const\n{\n	for (PollFdList::const_iterator pfd = pollfds_.begin();\n			pfd != pollfds_.end() && numEvents > 0; ++pfd) {\n		\n	}\n}",
+			"file": "cppnetool/net/Poller.cc",
+			"file_size": 655,
+			"file_write_time": 1397305970000000,
+			"settings":
+			{
+				"buffer_size": 657,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 360.0,
+		"selected_items":
+		[
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"re",
+				"CTags: Rebuild Tags"
+			],
+			[
+				"rebu",
+				"CTags: Rebuild Tags"
+			],
+			[
+				"Package Control: in",
+				"Package Control: Install Package"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"reb",
+				"CTags: Rebuild Tags"
+			],
+			[
+				"c",
+				"CTags: Rebuild Tags"
+			],
+			[
+				"rebui",
+				"CTags: Rebuild Tags"
+			],
+			[
+				"install package",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"Build: Build"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 337.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/ww/code/linux/cppnetool/cppnetool/net/EventLoop.cc",
+		"/home/ww/code/linux/cppnetool/cppnetool/net/Channel.cc",
+		"/home/ww/code/linux/cppnetool/cppnetool/net/Channel.h",
+		"/home/ww/code/linux/cppnetool/cppnetool/base/Atomic.h",
+		"/home/ww/code/linux/cppnetool/examples/thread/test.cc",
+		"/home/ww/code/linux/cppnetool/cppnetool/net/EventLoop.h",
+		"/home/ww/code/linux/cppnetool/cppnetool/base/Thread.h",
+		"/home/ww/code/linux/cppnetool/cppnetool/base/Thread.cc",
+		"/home/ww/code/linux/cppnetool/examples/reactor/reactor_test.cc",
+		"/home/ww/code/linux/cppnetool/examples/cppp/cppp.cc",
+		"/home/ww/code/linux/cppnetool/#Makefile#",
+		"/home/ww/code/linux/cppnetool/cppnetool/net/Makefile",
+		"/home/ww/code/linux/cppnetool/examples/reactor/ractor_test.cc",
+		"/home/ww/code/linux/cppnetool/cppnetool/base/debug.h",
+		"/home/ww/code/linux/cppnetool/cppnetool/base/Makefile",
+		"/home/ww/code/linux/cppnetool/examples/thread",
+		"/home/ww/code/linux/cnetool/include/common/debug.h",
+		"/home/ww/code/linux/cnetool/src/stream_interface.c",
+		"/home/ww/code/linux/cnetool/include/types/stream_interface.h",
+		"/home/ww/code/linux/cnetool/include/proto/stream_interface.h",
+		"/home/ww/code/linux/cnetool/include/types/session.h",
+		"/home/ww/code/linux/cnetool/include/proto/session.h",
+		"/home/ww/code/linux/cnetool/src/session.c",
+		"/home/ww/code/linux/cnetool/src/tcp_server.c",
+		"/home/ww/code/linux/cnetool/include/types/tcp_server.h",
+		"/home/ww/code/linux/cnetool/include/types/protocols.h",
+		"/home/ww/code/linux/cnetool/include/proto/tcp_server.h",
+		"/home/ww/code/linux/cnetool/Makefile",
+		"/home/ww/code/linux/cnetool/include/proto/poller.h",
+		"/home/ww/code/linux/cnetool/src/sepoll.c",
+		"/home/ww/code/linux/cnetool/include/proto/cache.h",
+		"/home/ww/code/linux/cnetool/include/common/epoll.h",
+		"/home/ww/code/linux/cnetool/src/poller.c",
+		"/home/ww/code/linux/cnetool/include/types/poller.h",
+		"/home/ww/code/linux/cnetool/cnetool.c~",
+		"/home/ww/code/linux/cnetool/include/types/tcp_server.h~",
+		"/home/ww/code/linux/cnetool/src/cfgparse.c",
+		"/home/ww/code/linux/cnetool/main.c",
+		"/home/ww/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
+		"/home/ww/code/c/haproxy1.0/haproxy.c",
+		"/home/ww/code/c/haproxy1.0/cfg",
+		"/home/ww/code/c/haproxy_ww/include/types/session.h",
+		"/home/ww/code/c/haproxy_ww/include/types/proto_http.h",
+		"/home/ww/code/c/haproxy_ww/include/common/debug.h",
+		"/home/ww/code/c/haproxy_ww/include/types/task.h",
+		"/home/ww/code/c/haproxy_ww/include/types/proxy.h",
+		"/home/ww/code/c/haproxy_ww/include/types/stream_interface.h",
+		"/home/ww/code/c/haproxy_ww/include/types/http_analysis.h",
+		"/home/ww/code/c/haproxy_ww/include/proto/http_analysis.h",
+		"/home/ww/code/c/haproxy_ww/include/types/hdr_idx.h",
+		"/home/ww/code/c/haproxy_ww/src/proto_tcp.c",
+		"/home/ww/code/c/haproxy_ww/include/proto/proto_http.h",
+		"/home/ww/code/c/haproxy_ww/src/proto_http.c",
+		"/home/ww/code/c/unp/configure",
+		"/home/ww/code/c/unp/config.h",
+		"/home/ww/code/c/unp/lib/wrapsock.c",
+		"/home/ww/code/c/unp/Make.defines",
+		"/home/ww/code/c/unp/config.h.in",
+		"/home/ww/code/c/unp/intro/daytimetcpsrv.c",
+		"/home/ww/code/c/unp/intro/daytimetcpcli.c",
+		"/home/ww/code/c/unp/intro/byteorder.c",
+		"/home/ww/code/c/unp/test/readline1.c",
+		"/home/ww/Nutstore/source code/unp/Makefile",
+		"/home/ww/code/c/unp/intro/Makefile",
+		"/home/ww/code/c/haproxy/Makefile (复件)",
+		"/home/ww/code/c/haproxy/src/haproxy.c",
+		"/home/ww/code/c/haproxy/src/ev_sepoll.c",
+		"/home/ww/code/c/haproxy/ev_sepoll.c",
+		"/home/ww/code/c/haproxy/signal.c",
+		"/home/ww/code/c/haproxy/include/types/fd.h",
+		"/home/ww/code/c/haproxy/include/proto/fd.h",
+		"/home/ww/code/c/haproxy/include/types/global.h",
+		"/home/ww/code/c/haproxy/Makefile",
+		"/home/ww/下载/eventpoll.c",
+		"/home/ww/下载/爱的艺术.txt",
+		"/home/ww/code/c/haproxy/haproxy.c",
+		"/home/ww/code/c/haproxy/include/proto/signal.h",
+		"/home/ww/code/c/haproxy/src/ev_epoll.c",
+		"/home/ww/code/c/haproxy/src/ev_poll.c",
+		"/home/ww/code/c/haproxy/src/time.c"
+	],
+	"find":
+	{
+		"height": 36.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"ReadEvent",
+			"PROTO_HTTP_DEBUG",
+			"an_bit",
+			"srvrep",
+			"test-webservers.srvrep",
+			"HAVE_SOCKADDR_DL",
+			"HAVE_STRUCT_",
+			"invalid_char",
+			"{\n",
+			"		err = invalid_char(args[1]);\n",
+			"invalid_char",
+			"cursection",
+			"OBJS",
+			"LDOPTS",
+			"epoll_ctl(",
+			"USE_GETSOCKNAME",
+			"all:",
+			"gcc",
+			"gcc  -g -o haproxy ",
+			"/usr/bin/ld",
+			"ev_poll.o"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 6,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "Makefile",
+					"settings":
+					{
+						"buffer_size": 1131,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								629,
+								629
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Makefile/Makefile.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "examples/cppp/cppp.cc",
+					"settings":
+					{
+						"buffer_size": 157,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								73,
+								73
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "cppnetool/base/Thread.h",
+					"settings":
+					{
+						"buffer_size": 997,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								680,
+								680
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 204.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "examples/reactor/reactor_test.cc",
+					"settings":
+					{
+						"buffer_size": 902,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								442,
+								442
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 51.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "cppnetool/base/Thread.cc",
+					"settings":
+					{
+						"buffer_size": 1871,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1183,
+								1183
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 612.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "cppnetool/net/EventLoop.h",
+					"settings":
+					{
+						"buffer_size": 621,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								353,
+								353
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 51.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "cppnetool/net/Poller.h",
+					"settings":
+					{
+						"buffer_size": 911,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								435,
+								435
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 153.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "cppnetool/net/Poller.cc",
+					"settings":
+					{
+						"buffer_size": 657,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								437,
+								437
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 102.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 32.0
+	},
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"proto",
+				"src/proto_http.c"
+			],
+			[
+				"session",
+				"src/session.c"
+			],
+			[
+				"proto_htt",
+				"src/proto_http.c"
+			],
+			[
+				"http",
+				"include/types/http_analysis.h"
+			],
+			[
+				"so",
+				"src/sock_raw.c"
+			],
+			[
+				"glo",
+				"include/types/global.h"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 285.0,
+	"status_bar_visible": true
+}

@@ -1,0 +1,27 @@
+vpath %.cc examples cppnetool/net cppnetool/base
+vpath %.h cppnetool/net cppnetool/base
+CPPFLAGS = -I .
+REA_OBJS = examples/reactor/reactor_test.o
+OBJS = cppnetool/net/EventLoop.o cppnetool/base/Thread.o 
+#cppp: examples/cppp/cppp.o $(OBJS) 
+#	g++ $^ -o $@ -lpthread
+reactor: $(OBJS)  $(REA_OBJS)
+	g++ $^ -o $@ -lpthread
+#examples/cppp/cppp.o:
+#	g++ $(CPPFLAGS) -c examples/cppp/cppp.cc -o examples/cppp/cppp.o -std=c++11
+examples/reactor/reactor_test.o:
+	g++ $(CPPFLAGS) -c examples/reactor/reactor_test.cc -o examples/reactor/reactor_test.o -std=c++11
+#test: examples/thread/test.o
+#	g++ $(CPPFLAGS) $^ -o $@ -lpthread -std=c++11
+#examples/thread/test.o:
+#	g++ $(CPPFLAGS) -c examples/thread/test.cc -o examples/thread/test.o -std=c++11
+#*.o: *.cc
+#	g++ $(CPPFLAGS) -c $@ -std=c++11
+
+cppnetool/base/Thread.o: cppnetool/base/Thread.cc
+	g++ $(CPPFLAGS) -c cppnetool/base/Thread.cc -o cppnetool/base/Thread.o -std=c++11
+cppnetool/net/EventLoop.o: cppnetool/net/EventLoop.cc
+	g++ $(CPPFLAGS) -c cppnetool/net/EventLoop.cc -o cppnetool/net/EventLoop.o -std=c++11
+
+clean: 
+	rm -f cppp test examples/thread/*.o examples/cppp/*.o examples/reactor/*.o $(OBJS) 
