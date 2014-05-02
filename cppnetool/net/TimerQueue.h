@@ -7,6 +7,7 @@
 #include <cppnetool/net/Timer.h>
 #include <cppnetool/net/TimerId.h>
 #include <cppnetool/net/Channel.h>
+#include <cppnetool/net/Callbacks.h>
 
 namespace cppnetool
 {
@@ -46,7 +47,7 @@ private:
 
 	EventLoop* loop_;
 	const int timerfd_;
-	Channel timerfdChannel_;
+	net::Channel timerfdChannel_;
 	// Timer list sorted by expiration
 	TimerList timers_;
 };

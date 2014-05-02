@@ -1,5 +1,6 @@
 #ifndef CPPNETOOL_NET_CALLBACKS_H
 #define CPPNETOOL_NET_CALLBACKS_H
+#include <functional>
 
 namespace cppnetool
 {

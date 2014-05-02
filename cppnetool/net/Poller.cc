@@ -32,6 +32,10 @@ void Poller::fillActiveChannels(int numEvents, ChannelList *activeChannels) cons
 {
 	for (PollFdList::const_iterator pfd = pollfds_.begin();
 			pfd != pollfds_.end() && numEvents > 0; ++pfd) {
-		
+		if (pfd->revents > 0)
+		{
+			--numEvents;
+			
+		}
 	}
 }

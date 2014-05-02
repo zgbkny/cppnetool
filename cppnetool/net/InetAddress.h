@@ -16,7 +16,7 @@ public:
 	/// Constructs an endpoint with given port number.
 	/// Mostly used in TcpServer listening.
 	explicit InetAddress(uint16_t port);
-
+	InetAddress() { }
 	/// Constructs an endpoint with given ip and port.
 	/// @c ip should be "1.2.3.4"
 	InetAddress(const std::string& ip, uint16_t port);
@@ -27,7 +27,7 @@ public:
 	: addr_(addr)
 	{ }
 
-	std::string toHostPort() const;
+	std::string toHostPort();
 
 	// default copy/assignment are Okay
 
@@ -35,6 +35,10 @@ public:
 	void setSockAddrInet(const struct sockaddr_in& addr) { addr_ = addr; }
 
 private:
+	void fromHostPort(const char* ip, uint16_t port,
+                           struct sockaddr_in* addr);
+	void toHostPort(char* buf, size_t size,
+                         const struct sockaddr_in& addr);
 	struct sockaddr_in addr_;
 };
 
