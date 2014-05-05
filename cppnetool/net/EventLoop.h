@@ -29,10 +29,16 @@ class EventLoop
  	bool isInLoopThread() const {return threadId_ == CurrentThread::tid();}
 
  	void updateChannel(Channel *channel);
+ 	void quit();
  private:
  	void abortNotInLoopThread();
+
+ 	typedef std::vector<Channel *> ChannelList;
  	bool looping_; /* atomic */
+ 	bool quit_; /* atomic */
  	const pid_t threadId_;
+ 	std::scoped_ptr<Poller> poller_;
+ 	ChannelList activeChannels_;
 };
 }/*end namespace net*/
 }/*end namespace cppnetool*/

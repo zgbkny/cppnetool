@@ -27,10 +27,25 @@ void EventLoop::loop()
 	assert(!looping_);
 	assertInLoopThread();
 	looping_ = true;
-
+	quit_ = false;
 	// poll
+	while (!quit_)
+	{
+		activeChannels_.clear();
+		poller_->poll(kPollTimeMs, &activeChannels_);
+		for (ChannelList::iterator it = activeChannels_.begin();
+			it != activeChannels_.end(); ++it)
+		{
+			(*it)->handleEvent();
+		}
+	}
 
 	looping_ = false;
+}
+
+void EventLoop::quit()
+{
+	quit_ = true;
 }
 
 void EventLoop::abortNotInLoopThread()
@@ -42,7 +57,9 @@ void EventLoop::abortNotInLoopThread()
 
 void EventLoop::updateChannel(Channel *channel)
 {
-	
+	assert(channel->ownerLoop() == this);
+	assertInLoopThread();
+	poller_->updateChannel(channel);
 }
 
 
