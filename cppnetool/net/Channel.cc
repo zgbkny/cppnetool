@@ -1,6 +1,7 @@
 #include <poll.h>
 #include <cppnetool/net/Channel.h>
 #include <cppnetool/net/EventLoop.h>
+#include <cppnetool/base/debug.h>
 
 using namespace cppnetool::net;
 
@@ -9,7 +10,11 @@ const int Channel::kReadEvent = POLLIN | POLLPRI;
 const int Channel::kWriteEvent = POLLOUT;
 
 Channel::Channel(EventLoop *loop, int fdArg)
-	:loop_(loop), fd_(fdArg), events_(0), revents_(0), index_(-1)
+	:	loop_(loop), 
+		fd_(fdArg), 
+		events_(0), 
+		revents_(0), 
+		index_(-1)
 {
 }
 void Channel::update()

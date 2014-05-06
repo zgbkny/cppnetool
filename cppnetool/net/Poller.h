@@ -14,6 +14,7 @@ namespace cppnetool
 namespace net
 {
 class Channel;
+//class EventLoop;
 
 class Poller
 {

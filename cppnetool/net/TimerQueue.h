@@ -18,7 +18,7 @@ class TimerId;
 class TimerQueue
 {
 public:
-	TimerQueue(EventLoop* loop);
+	TimerQueue(net::EventLoop* loop);
 	~TimerQueue();
 
 	///
@@ -45,7 +45,7 @@ private:
 
 	bool insert(Timer* timer);
 
-	EventLoop* loop_;
+	net::EventLoop* loop_;
 	const int timerfd_;
 	net::Channel timerfdChannel_;
 	// Timer list sorted by expiration

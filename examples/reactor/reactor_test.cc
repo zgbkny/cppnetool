@@ -7,7 +7,7 @@
 #include <sys/types.h>
 #include <linux/unistd.h>
 
-
+/*
 cppnetool::net::EventLoop* g_loop;
 void threadFunc()
 {
@@ -42,7 +42,7 @@ void test2()
   t.start();
   t.join();
 }
-int main()
+int main1()
 {
   test2();
-}
+}*/

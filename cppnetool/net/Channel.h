@@ -2,7 +2,7 @@
 #define CPPNETOOL_NET_CHANNEL_H
 #include <cppnetool/base/debug.h>
 #include <cppnetool/net/EventLoop.h>
-
+#include <functional>
 
 namespace cppnetool 
 {
@@ -10,7 +10,6 @@ namespace cppnetool
 namespace net
 {
 
-class EventLoop;	
 
 class Channel {
 public:
