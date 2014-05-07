@@ -3,13 +3,13 @@
 
 #include <set>
 #include <vector>
-#include <cppnetool/net/EventLoop.h>
-#include <cppnetool/net/Timer.h>
-#include <cppnetool/net/TimerId.h>
+#include <cppnetool/base/Timestamp.h>
 #include <cppnetool/net/Channel.h>
 #include <cppnetool/net/Callbacks.h>
 
 namespace cppnetool
+{
+namespace net
 {
 class EventLoop;
 class Timer;
@@ -51,6 +51,7 @@ private:
 	// Timer list sorted by expiration
 	TimerList timers_;
 };
+}
 
 }
 

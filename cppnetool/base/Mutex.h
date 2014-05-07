@@ -48,7 +48,7 @@ public:
 
 private:
 	pthread_mutex_t mutex_;
-		pid_t holder_;
+	pid_t holder_;
 };
 
 class MutexLockGuard

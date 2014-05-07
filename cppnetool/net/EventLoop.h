@@ -4,8 +4,8 @@
 #include <cppnetool/base/Thread.h>
 #include <cppnetool/base/debug.h>
 #include <cppnetool/base/Mutex.h>
-//#include <cppnetool/net/Poller.h>
-//#include <cppnetool/net/Channel.h>
+#include <cppnetool/net/Callbacks.h>
+#include <cppnetool/net/TimerId.h>
 #include <assert.h>
 #include <vector>
 #include <memory>
@@ -17,6 +17,7 @@ namespace net
 
 class Channel;
 class Poller;
+class TimerQueue;
 
 class EventLoop
 {
@@ -28,9 +29,26 @@ class EventLoop
  	void loop();
  	void quit();
 
+ 	Timestamp pollReturnTime() const { return pollReturnTime_; }
+
 	void runInLoop(const Functor &cb);
 	void queueInLoop(const Functor &cb);
 
+	TimerId runAt(const Timestamp& time, const TimerCallback& cb);
+	///
+	/// Runs callback after @c delay seconds.
+	/// Safe to call from other threads.
+	///
+	TimerId runAfter(double delay, const TimerCallback& cb);
+	///
+	/// Runs callback every @c interval seconds.
+	/// Safe to call from other threads.
+	///
+	TimerId runEvery(double interval, const TimerCallback& cb);
+
+	// internal use only
+	void wakeup();
+	void updateChannel(Channel *channel);
 
  	void assertInLoopThread()
  	{
@@ -41,9 +59,7 @@ class EventLoop
  	}
  	bool isInLoopThread() const { return threadId_ == CurrentThread::tid();}
 
- 	// internal use only
-	void wakeup();
- 	void updateChannel(Channel *channel);
+ 	
  	
  private:
  	void abortNotInLoopThread();
@@ -51,13 +67,14 @@ class EventLoop
 	void doPendingFunctors();
 
  	typedef std::vector<Channel *> ChannelList;
+
  	bool looping_; /* atomic */
  	bool quit_; /* atomic */
  	bool callingPendingFunctors_; /* atomic */
  	const pid_t threadId_;
-
+ 	Timestamp pollReturnTime_;
  	std::unique_ptr<Poller> poller_;
-
+ 	std::shared_ptr<TimerQueue> timerQueue_;
  	int wakeupFd_;
  	std::unique_ptr<Channel> wakeupChannel_;
  	ChannelList activeChannels_;

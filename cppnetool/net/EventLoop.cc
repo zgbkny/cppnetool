@@ -2,6 +2,7 @@
 #include <cppnetool/net/EventLoop.h>
 #include <cppnetool/net/Poller.h>
 #include <cppnetool/net/Channel.h>
+#include <cppnetool/net/TimerQueue.h>
 #include <cppnetool/base/Logging.h>
 #include <sys/eventfd.h>
 #include <unistd.h>
@@ -137,6 +138,23 @@ void EventLoop::queueInLoop(const Functor &cb)
 	{
 		wakeup();
 	}
+}
+
+TimerId EventLoop::runAt(const Timestamp& time, const TimerCallback& cb)
+{
+	return timerQueue_->addTimer(cb, time, 0.0);
+}
+
+TimerId EventLoop::runAfter(double delay, const TimerCallback& cb)
+{
+	Timestamp time(addTime(Timestamp::now(), delay));
+	return runAt(time, cb);
+}
+
+TimerId EventLoop::runEvery(double interval, const TimerCallback& cb)
+{
+	Timestamp time(addTime(Timestamp::now(), interval));
+	return timerQueue_->addTimer(cb, time, interval);
 }
 
 

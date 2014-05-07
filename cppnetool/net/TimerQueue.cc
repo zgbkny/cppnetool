@@ -1,6 +1,8 @@
+#define __STDC_LIMIT_MACROS
 #include <cppnetool/net/TimerQueue.h>
+#include <cppnetool/net/TimerId.h>
 #include <cppnetool/base/Logging.h>
-
+#include <cppnetool/net/EventLoop.h>
 #include <sys/timerfd.h>
 #include <unistd.h>
 #include <string.h>
@@ -65,6 +67,7 @@ void resetTimerfd(int timerfd, Timestamp expiration)
 }
 }
 using namespace cppnetool;
+using namespace cppnetool::net;
 using namespace cppnetool::detail;
 
 TimerQueue::TimerQueue(net::EventLoop *loop)

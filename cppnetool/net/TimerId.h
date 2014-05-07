@@ -5,6 +5,8 @@
 
 namespace cppnetool
 {
+namespace net
+{
 class Timer;
 
 class TimerId
@@ -19,7 +21,7 @@ public:
 private:
 	Timer *value_;
 };
-
+}
 }
 
 #endif /*CPPNETOOL_NET_TIMERID_H*/

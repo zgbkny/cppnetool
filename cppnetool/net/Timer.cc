@@ -1,6 +1,7 @@
 #include <cppnetool/net/Timer.h>
 
 using namespace cppnetool;
+using namespace cppnetool::net;
 
 void Timer::restart(Timestamp now)
 {

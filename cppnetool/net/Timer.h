@@ -6,6 +6,8 @@
 
 namespace cppnetool
 {
+namespace net
+{
 class Timer
 {
 public:
@@ -32,7 +34,7 @@ private:
 	const double interval_;
 	const bool repeat_;
 };
-
+}
 }
 
 #endif /*CPPNETOOL_NET_TIMER_H*/
