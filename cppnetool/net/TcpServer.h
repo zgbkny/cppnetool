@@ -9,6 +9,9 @@ namespace cppnetool
 namespace net
 {
 
+class Acceptor;
+class EventLoop;
+
 class TcpServer
 {
 public:
@@ -24,7 +27,7 @@ public:
 	{ messageCallback_ = cb; }
 
 private:
-	vodi newConnection(int sockfd, const InetAddress &peerAddr);
+	void newConnection(int sockfd, const InetAddress &peerAddr);
 
 	typedef std::map<std::string, TcpConnectionPtr> ConnectionMap;
 
