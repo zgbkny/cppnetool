@@ -27,7 +27,7 @@ public:
 	: addr_(addr)
 	{ }
 
-	std::string toHostPort();
+	std::string toHostPort() const;
 
 	// default copy/assignment are Okay
 

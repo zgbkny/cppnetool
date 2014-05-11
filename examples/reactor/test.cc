@@ -2,6 +2,9 @@
 #include <cppnetool/net/EventLoop.h>
 #include <cppnetool/net/Channel.h>
 #include <cppnetool/base/Logging.h>
+#include <cppnetool/net/Acceptor.h>
+#include <cppnetool/net/InetAddress.h>
+#include <cppnetool/net/SocketOps.h>
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
@@ -18,7 +21,7 @@ void timeout()
 	g_loop->quit();
 }
 
-int main()
+void timefd_test()
 {
 	EventLoop loop;
 	g_loop = &loop;
@@ -38,5 +41,29 @@ int main()
 	loop.loop();
 	LOG_TRACE << "here" << endl;
 	close(timerfd);
+}
+
+void newConnection(int sockfd, const InetAddress &peerAddr)
+{
+	cout << "new connection" << peerAddr.toHostPort().c_str() << endl;
+	write(sockfd, "how are you?\n", 13);
+	sockets::close(sockfd);
+}
+
+void acceptor_test()
+{
+	InetAddress listenAddr(9981);
+	EventLoop loop;
+	Acceptor acceptor(&loop, listenAddr);
+	
+	acceptor.setNewConnectionCallback(newConnection);
+	acceptor.listen();
+
+	loop.loop();
+}
+
+int main()
+{
+	acceptor_test();
 }
 

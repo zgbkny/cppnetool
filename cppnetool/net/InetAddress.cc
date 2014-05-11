@@ -28,7 +28,7 @@ InetAddress::InetAddress(const std::string& ip, uint16_t port)
 	sockets::fromHostPort(ip.c_str(), port, &addr_);
 }
 
-std::string InetAddress::toHostPort()
+std::string InetAddress::toHostPort() const
 {
 	char buf[32];
 	sockets::toHostPort(buf, sizeof buf, addr_);
