@@ -125,3 +125,15 @@ void sockets::toHostPort(char* buf, size_t size,
 	uint16_t port = ntohs(addr.sin_port);
 	snprintf(buf, size, "%s:%u", host, port);
 }
+
+struct sockaddr_in sockets::getLocalAddr(int sockfd)
+{
+	struct sockaddr_in localaddr;
+	bzero(&localaddr, sizeof localaddr);
+	socklen_t addrlen = sizeof(localaddr);
+	if (::getsockname(sockfd, sockaddr_cast(&localaddr), &addrlen) < 0)
+	{
+		LOG_SYSERR << "sockets::getLocalAddr";
+	}
+	return localaddr;
+}

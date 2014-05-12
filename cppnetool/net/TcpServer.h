@@ -3,6 +3,7 @@
 
 #include <cppnetool/net/Callbacks.h>
 #include <cppnetool/net/TcpConnection.h>
+#include <map>
 
 namespace cppnetool
 {
@@ -20,14 +21,15 @@ public:
 
 	void start();
 
-	void setConnectionCallback(const ConnctionCallback &cb);
+	void setConnectionCallback(const ConnectionCallback &cb)
 	{ connectionCallback_ = cb; }
 
-	void setMessageCallback(const MessageCallback &cb);
+	void setMessageCallback(const MessageCallback &cb)
 	{ messageCallback_ = cb; }
 
 private:
 	void newConnection(int sockfd, const InetAddress &peerAddr);
+	void removeConnection(const TcpConnectionPtr &conn);
 
 	typedef std::map<std::string, TcpConnectionPtr> ConnectionMap;
 
@@ -38,7 +40,7 @@ private:
 	MessageCallback messageCallback_;
 	bool started_;
 	int nextConnId_;
-	ConnectionMap connctions_;
+	ConnectionMap connections_;
 };
 
 }

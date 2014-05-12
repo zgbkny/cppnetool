@@ -1,11 +1,15 @@
 #include <cppnetool/net/TcpServer.h>
 #include <cppnetool/net/Acceptor.h>
 #include <cppnetool/net/EventLoop.h>
+#include <cppnetool/net/SocketOps.h>
+#include <cppnetool/base/Logging.h>
 #include <stdio.h>
 
 
 using namespace cppnetool;
 using namespace cppnetool::net;
+using std::placeholders::_1;
+using std::placeholders::_2;
 
 TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr)
 	:	loop_(loop),
@@ -14,6 +18,7 @@ TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr)
 		started_(false),
 		nextConnId_(1)
 {
+//	LOG_INFO << "FIXME::TcpServer";
 	acceptor_->setNewConnectionCallback(
 		std::bind(&TcpServer::newConnection, this, _1, _2));
 }
@@ -28,13 +33,13 @@ void TcpServer::start()
 	if (!started_) {
 		started_ = true;
 	}
-	if (acceptor_->listenning()) {
+	if (!acceptor_->listenning()) {
 		loop_->runInLoop(
-			std::bind(&Acceptor::listen, get_pointer(acceptor_)));
+			std::bind(&Acceptor::listen, acceptor_.get()));
 	}
 }
 
-void newConnection(int sockfd, const InetAddress &peerAddr)
+void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
 {
 	loop_->assertInLoopThread();
 	char buf[32];
@@ -52,5 +57,18 @@ void newConnection(int sockfd, const InetAddress &peerAddr)
 	connections_[connName] = conn;
 	conn->setConnectionCallback(connectionCallback_);
 	conn->setMessageCallback(messageCallback_);
+	conn->setCloseCallback(
+		std::bind(&TcpServer::removeConnection, this, _1));
 	conn->connectEstablished();
+}
+
+void TcpServer::removeConnection()
+{
+	loop_->assertInLoopThread();
+	LOG_INFO << "TcpServer::removeConnection [" << name_
+		     << "] - connection " << conn->name();
+	size_t n = conntions_.erase(conn->name());
+	assert(n == 1); (void)n;
+	loop_->queueInLoop(
+		std::bind(&TcpConnection::connectDestroyed, conn));
 }

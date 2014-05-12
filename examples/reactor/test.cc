@@ -5,6 +5,7 @@
 #include <cppnetool/net/Acceptor.h>
 #include <cppnetool/net/InetAddress.h>
 #include <cppnetool/net/SocketOps.h>
+#include <cppnetool/net/TcpServer.h>
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
@@ -62,8 +63,38 @@ void acceptor_test()
 	loop.loop();
 }
 
+void onConnection(TcpConnection *conn)
+{
+	if (conn->connected()) {
+		cout << endl << "onConnection(): new connection [" << conn->name().c_str() << "] from " 
+			 << conn->peerAddress().toHostPort().c_str() << endl;
+	} else {
+		cout << "onConnection(): connection [" << conn->name().c_str() << "] is down" << endl;
+	}
+}	
+
+void onMessage(TcpConnection *conn, char *data, ssize_t len)
+{
+	cout << "onMessage(): received " << len << "bytes from connection [" << conn->name().c_str() << "]" << endl;
+}
+
+void server_test()
+{
+	InetAddress listenAddr(9981);
+	EventLoop loop;
+	
+	TcpServer server(&loop, listenAddr);
+	
+	server.setConnectionCallback(onConnection);
+	server.setMessageCallback(onMessage);
+	server.start();
+
+	loop.loop();
+}
+
 int main()
 {
-	acceptor_test();
+	//acceptor_test();
+	server_test();
 }
 

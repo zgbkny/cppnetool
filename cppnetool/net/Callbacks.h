@@ -12,10 +12,11 @@ namespace net
 class TcpConnection;
 typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 typedef std::function<void()> TimerCallback;
-typedef std::function<void(const TcpConnectionPtr &)> ConnectionCallback; 
-typedef std::function<void(const TcpConnectionPtr &,
+typedef std::function<void(TcpConnection *)> ConnectionCallback; 
+typedef std::function<void(TcpConnection *,
 							char *data,
 							ssize_t len)> MessageCallback;
+typedef std::function<void (TcpConnection *)> CloseCallback;
 
 }
 

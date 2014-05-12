@@ -1,6 +1,7 @@
 #include <poll.h>
 #include <cppnetool/net/Channel.h>
 #include <cppnetool/net/EventLoop.h>
+#include <cppnetool/base/Logging.h>
 #include <cppnetool/base/debug.h>
 
 using namespace cppnetool::net;
@@ -14,8 +15,13 @@ Channel::Channel(EventLoop *loop, int fdArg)
 		fd_(fdArg), 
 		events_(0), 
 		revents_(0), 
-		index_(-1)
+		index_(-1),
+		eventHandling_(false)
 {
+}
+Channel::~Channel()
+{
+	assert(!eventHandling_);
 }
 void Channel::update()
 {
@@ -23,8 +29,14 @@ void Channel::update()
 }
 void Channel::handleEvent()
 {
+	eventHandling_ = true;
 	if (revents_ & POLLNVAL) {
+		LOG_WARN << "Channel::handle_event() POLLNVAL";
+	}
 
+	if ((revents_ & POLLHUP) && !(revents_ & POLLIN)) {
+		LOG_WARN << "Channel::handle_event() POLLHUP";
+		if (closeCallback_) closeCallback_();
 	}
 
 	if (revents_ & (POLLERR | POLLNVAL)) {
@@ -38,4 +50,5 @@ void Channel::handleEvent()
 	if (revents_ & POLLOUT) {
 		if (writeCallback_) writeCallback_();
 	}
+	eventHandling_ = false;
 }
