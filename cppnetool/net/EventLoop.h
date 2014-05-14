@@ -49,6 +49,7 @@ class EventLoop
 	// internal use only
 	void wakeup();
 	void updateChannel(Channel *channel);
+	void removeChannel(Channel *channel);
 
  	void assertInLoopThread()
  	{
@@ -76,7 +77,7 @@ class EventLoop
  	std::unique_ptr<Poller> poller_;
  	std::shared_ptr<TimerQueue> timerQueue_;
  	int wakeupFd_;
- 	std::unique_ptr<Channel> wakeupChannel_;
+ 	std::shared_ptr<Channel> wakeupChannel_;
  	ChannelList activeChannels_;
  	MutexLock mutex_;
 	std::vector<Functor> pendingFunctors_; // @Buarded By mutex_

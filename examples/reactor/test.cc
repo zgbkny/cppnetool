@@ -1,6 +1,7 @@
 #include <sys/timerfd.h>
 #include <cppnetool/net/EventLoop.h>
 #include <cppnetool/net/Channel.h>
+#include <cppnetool/base/Timestamp.h>
 #include <cppnetool/base/Logging.h>
 #include <cppnetool/net/Acceptor.h>
 #include <cppnetool/net/InetAddress.h>
@@ -16,7 +17,7 @@ using namespace std;
 
 EventLoop * g_loop;
 
-void timeout()
+/*void timeout()
 {
 	cout << "timeout" << endl;
 	g_loop->quit();
@@ -61,7 +62,7 @@ void acceptor_test()
 	acceptor.listen();
 
 	loop.loop();
-}
+}*/
 
 void onConnection(TcpConnection *conn)
 {
@@ -73,9 +74,14 @@ void onConnection(TcpConnection *conn)
 	}
 }	
 
-void onMessage(TcpConnection *conn, char *data, ssize_t len)
+void onMessage(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)
 {
-	cout << "onMessage(): received " << len << "bytes from connection [" << conn->name().c_str() << "]" << endl;
+	printf("onMessage(): received %zd bytes from connection [%s] at %s\n",
+			buf->readableBytes(),
+			conn->name().c_str(),
+			receiveTime.toFormattedString().c_str());
+
+	printf("onMessage(): [%s]\n", buf->retrieveAsString().c_str());
 }
 
 void server_test()

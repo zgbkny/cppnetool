@@ -105,6 +105,13 @@ void sockets::close(int sockfd)
 		LOG_SYSERR << "sockets::close";
 	}
 }
+void sockets::shutdownWrite(int sockfd)
+{
+	if (::shutdown(sockfd, SHUT_WR) < 0)
+	{
+		LOG_SYSERR << "sockets::shutdownWrite";
+	}
+}
 
 void sockets::fromHostPort(const char* ip, uint16_t port,
                            struct sockaddr_in* addr)
@@ -136,4 +143,16 @@ struct sockaddr_in sockets::getLocalAddr(int sockfd)
 		LOG_SYSERR << "sockets::getLocalAddr";
 	}
 	return localaddr;
+}
+
+int sockets::getSocketError(int sockfd)
+{
+	int optval;
+	socklen_t optlen = sizeof optval;
+
+	if (::getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0) {
+		return errno;
+	} else {
+		return optval;
+	}
 }

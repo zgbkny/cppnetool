@@ -36,7 +36,7 @@ public:
 	///
 	void setReuseAddr(bool on);
 
-
+	void shutdownWrite();
 
 private:
 	int sockfd_;

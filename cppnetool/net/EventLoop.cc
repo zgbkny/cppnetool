@@ -6,6 +6,7 @@
 #include <cppnetool/base/Logging.h>
 #include <sys/eventfd.h>
 #include <unistd.h>
+#include <signal.h>
 
 
 
@@ -26,17 +27,36 @@ static int createEventfd()
 	return evtfd;
 }
 
+class IgnoreSigPipe
+{
+public:
+	IgnoreSigPipe()
+	{
+		::signal(SIGPIPE, SIG_IGN);
+	}
+};
+
+IgnoreSigPipe initObj;
+
 EventLoop::EventLoop() 
-	: looping_(false), 
-	  threadId_(CurrentThread::tid()),
-	  poller_(new Poller(this)),
-	  wakeupFd_(createEventfd())
+	: 	looping_(false), 
+		quit_(false),
+		callingPendingFunctors_(false),
+		threadId_(CurrentThread::tid()),
+		poller_(new Poller(this)),
+		timerQueue_(new TimerQueue(this)),
+		wakeupFd_(createEventfd()),
+		wakeupChannel_(new Channel(this, wakeupFd_))
 {
 	if (t_loopInThisThread) {
 
 	} else {
 		t_loopInThisThread = this;
 	}
+	wakeupChannel_->setReadCallback(
+		std::bind(&EventLoop::handleRead, this));
+	// we are always reading the wakeupfd
+	wakeupChannel_->enableReading();
 }
 EventLoop::~EventLoop()
 {
@@ -53,11 +73,11 @@ void EventLoop::loop()
 	while (!quit_)
 	{
 		activeChannels_.clear();
-		poller_->poll(kPollTimeMs, &activeChannels_);
+		pollReturnTime_ = poller_->poll(kPollTimeMs, &activeChannels_);
 		for (ChannelList::iterator it = activeChannels_.begin();
 			it != activeChannels_.end(); ++it)
 		{
-			(*it)->handleEvent();
+			(*it)->handleEvent(pollReturnTime_);
 		}
 	}
 
@@ -93,6 +113,7 @@ void EventLoop::handleRead()
 	{
 		LOG_ERROR << "EventLoop::handleRead() reads " << n << " bytes instead of 8";
 	}
+	doPendingFunctors();
 }
 
 void EventLoop::doPendingFunctors()
@@ -117,6 +138,13 @@ void EventLoop::updateChannel(Channel *channel)
 	assert(channel->ownerLoop() == this);
 	assertInLoopThread();
 	poller_->updateChannel(channel);
+}
+
+void EventLoop::removeChannel(Channel *channel)
+{
+	assert(channel->ownerLoop() == this);
+	assertInLoopThread();
+	poller_->removeChannel(channel);
 }
 
 void EventLoop::runInLoop(const Functor &cb)
