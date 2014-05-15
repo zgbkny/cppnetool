@@ -62,7 +62,7 @@ void acceptor_test()
 	acceptor.listen();
 
 	loop.loop();
-}*/
+}
 
 void onConnection(TcpConnection *conn)
 {
@@ -96,11 +96,81 @@ void server_test()
 	server.start();
 
 	loop.loop();
+}*/
+
+std::string message;
+
+void onConnection(TcpConnection *conn)
+{
+  if (conn->connected())
+  {
+    printf("onConnection(): tid=%d new connection [%s] from %s\n",
+           CurrentThread::tid(),
+           conn->name().c_str(),
+           conn->peerAddress().toHostPort().c_str());
+    conn->send(message);
+  }
+  else
+  {
+    printf("onConnection(): tid=%d connection [%s] is down\n",
+           CurrentThread::tid(),
+           conn->name().c_str());
+  }
+}
+
+void onWriteComplete(TcpConnection *conn)
+{
+  conn->send(message);
+}
+
+void onMessage(TcpConnection *conn,
+               Buffer *buf,
+               Timestamp receiveTime)
+{
+  printf("onMessage(): tid=%d received %zd bytes from connection [%s] at %s\n",
+         CurrentThread::tid(),
+         buf->readableBytes(),
+         conn->name().c_str(),
+         receiveTime.toFormattedString().c_str());
+
+  buf->retrieveAll();
+}
+
+void reactor_test()
+{
+  printf("main(): pid = %d\n", getpid());
+
+  std::string line;
+  for (int i = 33; i < 127; ++i)
+  {
+    line.push_back(char(i));
+  }
+  line += line;
+
+  for (size_t i = 0; i < 127-33; ++i)
+  {
+    message += line.substr(i, 72) + '\n';
+  }
+
+  InetAddress listenAddr(9981);
+  EventLoop loop;
+
+  TcpServer server(&loop, listenAddr);
+  server.setConnectionCallback(onConnection);
+  server.setMessageCallback(onMessage);
+  server.setWriteCompleteCallback(onWriteComplete);
+
+  server.setThreadNum(3);
+
+  server.start();
+
+  loop.loop();
 }
 
 int main()
 {
 	//acceptor_test();
-	server_test();
+	//server_test();
+	reactor_test();
 }
 

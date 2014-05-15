@@ -1,6 +1,8 @@
 #include <cppnetool/net/Socket.h>
 #include <cppnetool/net/SocketOps.h>
 #include <string.h>
+#include <netinet/tcp.h>
+#include <netinet/in.h>
 
 using namespace cppnetool;
 using namespace cppnetool::net;
@@ -46,3 +48,18 @@ void Socket::shutdownWrite()
 	sockets::shutdownWrite(sockfd_);
 }
 
+void Socket::setTcpNoDelay(bool on)
+{
+	int optval = on ? 1 : 0;
+	::setsockopt(sockfd_, IPPROTO_TCP, TCP_NODELAY,
+				&optval, sizeof optval);
+	// FIXME CHECK
+}
+
+void Socket::setKeepAlive(bool on)
+{
+	int optval = on ? 1 : 0;
+	::setsockopt(sockfd_, SOL_SOCKET, SO_KEEPALIVE,
+	           &optval, sizeof optval);
+	// FIXME CHECK
+}
