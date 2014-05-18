@@ -43,7 +43,7 @@ private:
 	int removeAndResetChannel();
 	void resetChannel();
 
-	EventLoop* loop_;
+	EventLoop *loop_;
 	InetAddress serverAddr_;
 	bool connect_; // atomic
 	States state_;  // FIXME: use atomic variable

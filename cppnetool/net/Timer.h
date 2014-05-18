@@ -12,10 +12,11 @@ class Timer
 {
 public:
 	Timer(const TimerCallback& cb, Timestamp when, double interval)
-	    : callback_(cb),
-	      expiration_(when),
-	      interval_(interval),
-	      repeat_(interval > 0.0)
+	    : 	callback_(cb),
+	    	expiration_(when),
+	    	interval_(interval),
+	    	repeat_(interval > 0.0),
+	    	sequence_(s_numCreated_.incrementAndGet())
   	{ }
 
 	void run() const
@@ -33,6 +34,9 @@ private:
 	Timestamp expiration_;
 	const double interval_;
 	const bool repeat_;
+	const int64_t sequence_;
+
+	static AtomicInt64 s_numCreated_;
 };
 }
 }

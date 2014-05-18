@@ -181,3 +181,16 @@ bool TimerQueue::insert(Timer *timer)
 	assert(result.second);
 	return earliestChanged;
 }
+
+void TimerQueue::cancel(TimerId timerId)
+{
+	loop_->runInLoop(
+		std::bind(&TimerQueue::cancelInLoop, this, timerId));
+}
+
+void TimerQueue:cancelInLoop(TimerId timerId)
+{
+	loop_->assertInLoopThread();
+	assert(timers_.size() == activeTimers_.size());
+	
+}
