@@ -114,13 +114,15 @@ void TimerQueue::handleRead()
 
 	std::vector<Entry> expired = getExpired(now);
 
+	callingExpiredTimers_ = true;
+	cancelingTimers_.clear();
 	// safe to callback outside critical section
 	for (std::vector<Entry>::iterator it = expired.begin();
 			it != expired.end(); ++it)
 	{
 		it->second->run();
 	}
-
+	callingExpiredTimers_ = false;
 	reset(expired, now);
 }
 
@@ -143,7 +145,9 @@ void TimerQueue::reset(const std::vector<Entry>& expired, Timestamp now)
 	for (std::vector<Entry>::const_iterator it = expired.begin();
 				it != expired.end(); ++it)
 	{
-		if (it->second->repeat())
+		ActiveTimer timer(it->second, it->second->sequence());
+		if (it->second->repeat()
+			&& cancelingTimers_.find(timer) == cancelingTimers_.end())
 		{
 			it->second->restart(now);
 			insert(it->second);
