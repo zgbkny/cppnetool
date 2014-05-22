@@ -93,7 +93,7 @@ TimerId TimerQueue::addTimer(const TimerCallback &cb,
 {
 	Timer *timer = new Timer(cb, when, interval);
 	loop_->runInLoop(std::bind(&TimerQueue::addTimerInLoop, this, timer));
-	return TimerId(timer);
+	return TimerId(timer, timer->sequence());
 }
 void TimerQueue::addTimerInLoop(Timer *timer)
 {
@@ -135,6 +135,15 @@ std::vector<TimerQueue::Entry> TimerQueue::getExpired(Timestamp now)
 	std::copy(timers_.begin(), it, back_inserter(expired));
 	timers_.erase(timers_.begin(), it);
 
+	for (std::vector<Entry>::iterator it = expired.begin();
+			it != expired.end(); ++it)
+	{
+		ActiveTimer timer(it->second, it->second->sequence());
+		size_t n = activeTimers_.erase(timer);
+		assert(n == 1); (void)n;
+	}
+
+	assert(timers_.size() == activeTimers_.size());
 	return expired;
 }
 

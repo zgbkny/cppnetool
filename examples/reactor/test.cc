@@ -96,8 +96,7 @@ void server_test()
 	server.start();
 
 	loop.loop();
-}*/
-
+}
 std::string message;
 
 void onConnection(TcpConnection *conn)
@@ -165,12 +164,13 @@ void reactor_test()
   server.start();
 
   loop.loop();
-}
+}*/
+
 
 int main()
 {
 	//acceptor_test();
 	//server_test();
-	reactor_test();
+	//reactor_test(); 
 }
 

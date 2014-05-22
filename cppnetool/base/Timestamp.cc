@@ -9,12 +9,12 @@
 using namespace cppnetool;
 
 Timestamp::Timestamp()
-  : microSecondsSinceEpoch_(0)
+	:	microSecondsSinceEpoch_(0)
 {
 }
 
 Timestamp::Timestamp(int64_t microSeconds)
-  : microSecondsSinceEpoch_(microSeconds)
+	:	microSecondsSinceEpoch_(microSeconds)
 {
 }
 
