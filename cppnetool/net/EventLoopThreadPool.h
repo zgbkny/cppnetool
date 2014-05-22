@@ -24,7 +24,7 @@ private:
 	EventLoop *baseLoop_;
 	bool started_;
 	int numThreads_;
-	int next_;
+	unsigned int next_;
 	std::vector<EventLoopThread *> threads_;
 	std::vector<EventLoop *> loops_;
 };

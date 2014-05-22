@@ -39,7 +39,7 @@ private:
 	typedef std::set<ActiveTimer> ActiveTimerSet;
 
 	void addTimerInLoop(Timer *timer);
-	void cancelInLoop(Timer *timer);
+	void cancelInLoop(TimerId timerId);
 	// called when timerfd alarms
 	void handleRead();
 	// move out all expired timers

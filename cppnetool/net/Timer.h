@@ -3,6 +3,7 @@
 
 #include <cppnetool/net/Callbacks.h>
 #include <cppnetool/base/Timestamp.h>
+#include <cppnetool/base/Atomic.h>
 
 namespace cppnetool
 {
@@ -17,7 +18,8 @@ public:
 	    	interval_(interval),
 	    	repeat_(interval > 0.0),
 	    	sequence_(s_numCreated_.incrementAndGet())
-  	{ }
+  	{ 
+  	}
 
 	void run() const
 	{
@@ -28,6 +30,10 @@ public:
 	bool repeat() const { return repeat_; }
 
 	void restart(Timestamp now);
+
+	int64_t sequence() { return sequence_; }
+
+	
 
 private:
 	const TimerCallback callback_;
