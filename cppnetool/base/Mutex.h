@@ -1,8 +1,11 @@
 #ifndef CPPNETOOL_BASE_MUTEX_H
 #define CPPNETOOL_BASE_MUTEX_H
 
+
+#include <cppnetool/base/Thread.h>
 #include <cppnetool/base/debug.h>
 #include <pthread.h>
+
 
 namespace cppnetool
 {
