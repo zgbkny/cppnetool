@@ -11,10 +11,20 @@ using std::placeholders::_1;
 using std::string;
 namespace cppnetool
 {
+namespace net
+{
 namespace detail
 {
+void removeConnection(EventLoop* loop, TcpConnection *conn)
+{
+	loop->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
+}
 
-
+void removeConnector(const ConnectorPtr& connector)
+{
+  //connector->
+}
+}
 }
 }
 using namespace cppnetool::net;
@@ -108,7 +118,7 @@ void TcpClient::removeConnection(TcpConnection *conn)
 
 	{
 		MutexLockGuard lock(mutex_);
-	    assert(connection_ == conn);
+	    assert(connection_.get() == conn);
 		connection_.reset();
 	}
 
