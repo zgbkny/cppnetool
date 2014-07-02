@@ -167,7 +167,7 @@ void reactor_test()
 }*/
 
 
-int main()
+int main1()
 {
 	//acceptor_test();
 	//server_test();
