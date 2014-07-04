@@ -20,7 +20,7 @@ using std::placeholders::_2;
 using std::placeholders::_3;
 class Proxy {
 public:
-	Proxy(uint16_t port);
+	Proxy(uint16_t port, const std::string& ip, uint16_t servPort);
 	void set_conf();
 	void valid_conf();
 	bool init();
@@ -33,9 +33,10 @@ private:
 	void onTcpServerConnection_(TcpConnection *conn);
 	void onTcpServerMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime);
 	InetAddress listenAddr_;
+	InetAddress serverAddr_;
 	EventLoop loop_;
 	TcpServer tcpServer_;
-	queue<TcpClient *> qTcpClient_;
+	std::queue<TcpClient *> qTcpClient_;
 };
 
 #endif /*PROXY_H*/

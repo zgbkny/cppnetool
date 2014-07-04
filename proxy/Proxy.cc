@@ -4,8 +4,9 @@
 #include <iostream>
 
 
-Proxy::Proxy(uint16_t port)
+Proxy::Proxy(uint16_t port, const std::string& ip, uint16_t servPort)
 	:	listenAddr_(port),
+		serverAddr_(ip, servPort),
 		loop_(),
 		tcpServer_(&loop_, listenAddr_)
 {
@@ -16,9 +17,9 @@ void Proxy::onTcpServerConnection_(TcpConnection *conn)
 {
 	if (conn->connected()) {
 		LOG_TRACE << "onConnection(): new connection [" << conn->name().c_str() << "] from " 
-			 << conn->peerAddress().toHostPort().c_str() << std::endl;
+			 << conn->peerAddress().toHostPort().c_str();
 	} else {
-		LOG_TRACE << "onConnection(): connection [" << conn->name().c_str() << "] is down" << std::endl;
+		LOG_TRACE << "onConnection(): connection [" << conn->name().c_str() << "] is down";
 	}
 }
 void Proxy::onTcpServerMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)

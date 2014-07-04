@@ -2,6 +2,7 @@
 #define CPPNETOOL_BASE_LOGSTREAM_H
 #include <cppnetool/base/debug.h>
 #include <string>
+#include <string.h>
 
 namespace cppnetool
 {
@@ -36,8 +37,8 @@ public:
 		}
 	}
 
-	const char *data() { return data_; }
-	int length() { return cur_ - data_; }
+	const char *data() const { return data_; }
+	int length() const { return cur_ - data_; }
 
 	char *current() { return cur_; }
 	int avail() const { return static_cast<int>(end() - cur_); }
@@ -55,15 +56,15 @@ public:
 
 private:
 	const char *end() const { return data_ + sizeof data_; }
-	static void cookieEnd();
-	static void cookieStart();
+	static void cookieEnd(){ } 
+	static void cookieStart(){ }  // FIXME!! why cannot impl in LogStream.cc
 
 	void (*cookie_)();
 	char  data_[SIZE];
 	char *cur_;
 };
 
-}
+} //detail
 
 class T
 {
@@ -86,7 +87,7 @@ public:
 	typedef detail::FixedBuffer<detail::kSmallBuffer> Buffer;
 	self& operator<<(bool v)
 	{
-		buffer_.append(v ? 1 : 0, 1);
+		buffer_.append(v ? "1" : "0", 1);
 		return *this;
 	}
 
@@ -144,6 +145,8 @@ private:
 	void formatInteger(T);
 
 	Buffer buffer_;
+
+	static const int kMaxNumericSize = 32;
 };
 
 class Fmt
