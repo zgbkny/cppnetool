@@ -17,6 +17,8 @@ class EventLoopThreadPool;
 class TcpServer
 {
 public:
+
+
 	TcpServer(EventLoop *loop, const InetAddress &listenAddr);
 	~TcpServer();
 
@@ -44,6 +46,7 @@ public:
 	{ writeCompleteCallback_ = cb; }
 
 private:
+
 	/// Not thread safe, but in loop
 	void newConnection(int sockfd, const InetAddress &peerAddr);
 	/// Thread safe
@@ -52,7 +55,6 @@ private:
 	void removeConnectionInLoop(TcpConnection *conn);
 
 	typedef std::map<std::string, TcpConnectionPtr> ConnectionMap;
-
 	EventLoop *loop_; // the acceptor loop
 	const std::string name_;
 	std::shared_ptr<Acceptor> acceptor_;

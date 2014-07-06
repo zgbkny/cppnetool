@@ -17,7 +17,7 @@ class Socket;
 class TcpConnection
 {
 public:
-
+	enum StateE { kConnecting, kConnected, kDisconnecting, kDisconnected };
 	TcpConnection(EventLoop* loop,
 				const std::string& name,
 				int sockfd,
@@ -30,7 +30,7 @@ public:
 	const InetAddress& localAddress() { return localAddr_; }
 	const InetAddress& peerAddress() { return peerAddr_; }
 	bool connected() const { return state_ == kConnected; }
-
+	StateE getState() { return state_; }
 
 	//void send(const void* message, size_t len);
 	// Thread safe.
@@ -62,7 +62,7 @@ public:
 	void connectDestroyed();  // should be called only once
 
 private:
-	enum StateE { kConnecting, kConnected, kDisconnecting, kDisconnected };
+	
 
 	void setState(StateE s) { state_  = s; }
 	void handleRead(Timestamp receiveTime);
