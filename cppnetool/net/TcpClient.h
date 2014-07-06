@@ -49,6 +49,11 @@ public:
 	void setWriteCompleteCallback(const WriteCompleteCallback& cb)
 	{ writeCompleteCallback_ = cb; }
 
+	TcpConnectionPtr getConn() {
+		if (state_) return connection_;
+		else return NULL;
+	}
+
 private:
 	void newConnection(int sockfd);
 	void removeConnection(TcpConnection *conn);
@@ -60,6 +65,7 @@ private:
 	WriteCompleteCallback writeCompleteCallback_;
 	bool retry_;   // atmoic
 	bool connect_; // atomic
+	bool state_;
 	// always in loop thread
 	int nextConnId_;
 	mutable MutexLock mutex_;

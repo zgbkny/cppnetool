@@ -33,6 +33,7 @@ TcpClient::TcpClient(EventLoop *loop, const InetAddress &serverAddr)
 		connector_(new Connector(loop, serverAddr)),
 		retry_(false),
 		connect_(false),
+		state_(false),
 		nextConnId_(1)
 {
 	connector_->setNewConnectionCallback(
@@ -83,6 +84,7 @@ void TcpClient::stop()
 
 void TcpClient::newConnection(int sockfd)
 {
+	state_ = true;
 	loop_->assertInLoopThread();
 	InetAddress peerAddr(sockets::getPeerAddr(sockfd));
 	char buf[32];
@@ -113,6 +115,7 @@ void TcpClient::newConnection(int sockfd)
 
 void TcpClient::removeConnection(TcpConnection *conn)
 {
+	state_ = false;
 	loop_->assertInLoopThread();
 	assert(loop_ == conn->getLoop());
 

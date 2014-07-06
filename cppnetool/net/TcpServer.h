@@ -45,6 +45,8 @@ public:
 	void setWriteCompleteCallback(const WriteCompleteCallback& cb)
 	{ writeCompleteCallback_ = cb; }
 
+	TcpConnectionPtr getConn(std::string name) { return ConnectionMap[name]; }
+
 private:
 
 	/// Not thread safe, but in loop
