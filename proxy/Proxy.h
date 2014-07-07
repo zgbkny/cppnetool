@@ -30,6 +30,9 @@ public:
 	//
 
 private:
+	void onTcpClientConnection_(TcpConnection *conn);
+	void onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime);
+
 	void onTcpServerConnection_(TcpConnection *conn);
 	void onTcpServerMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime);
 	InetAddress listenAddr_;

@@ -45,7 +45,7 @@ public:
 	void setWriteCompleteCallback(const WriteCompleteCallback& cb)
 	{ writeCompleteCallback_ = cb; }
 
-	TcpConnectionPtr getConn(std::string name) { return ConnectionMap[name]; }
+	TcpConnectionPtr getConn(std::string name) { return connections_[name]; }
 
 private:
 

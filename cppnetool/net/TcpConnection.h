@@ -61,6 +61,9 @@ public:
 	void connectEstablished();   // should be called only once
 	void connectDestroyed();  // should be called only once
 
+	void *getPair() { return pair_; }
+	void setPair(void *pair) { pair_ = pair; }
+
 private:
 	
 
@@ -71,6 +74,8 @@ private:
 	void handleError();
 	void sendInLoop(const std::string& message);
 	void shutdownInLoop();
+
+	void *pair_;
 
 	EventLoop *loop_;
 	std::string name_;

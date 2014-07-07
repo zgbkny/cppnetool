@@ -13,6 +13,17 @@ Proxy::Proxy(uint16_t port, const std::string& ip, uint16_t servPort)
 
 }
 
+void Proxy::onTcpClientConnection_(TcpConnection *conn)
+{
+
+}
+
+void Proxy::onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)
+{
+
+}
+
+
 void Proxy::onTcpServerConnection_(TcpConnection *conn)
 {
 	if (conn->connected()) {
@@ -21,15 +32,20 @@ void Proxy::onTcpServerConnection_(TcpConnection *conn)
 	} else {
 		LOG_TRACE << "onConnection(): connection [" << conn->name().c_str() << "] is down";
 	}
+	TcpClient *tcpClient = new TcpClient(loop_, serverAddr_);
+	tcpClient->setConnectionCallback(
+		std::bind(&Proxy::onTcpClientConnection_, this, _1));
+	tcpClient->setMessageCallback(
+		std::bind(&Proxy::onTcpClientMessage_, this, _1, _2, _3));
+	qTcpClient_.push(tcpClient);
+	conn->setPair(tcpClient);
+	tcpClient->start();
 }
 void Proxy::onTcpServerMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)
 {
 	printf("onMessage(): received %zd bytes from connection [%s] at %s\n",
 			buf->readableBytes(),
-			conn->name().c_str(),
-			receiveTime.toFormattedString().c_str());
 
-	printf("onMessage(): [%s]\n", buf->retrieveAsString().c_str());
 }
 
 void Proxy::set_conf()
@@ -57,9 +73,6 @@ bool Proxy::start_proxies()
 
 void Proxy::loop()
 {
-	LOG_TRACE << qTcpClient_.size();
-	qTcpClient_.push(NULL);
-	LOG_TRACE << qTcpClient_.size();
 	loop_.loop();
 }
 
