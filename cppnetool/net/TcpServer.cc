@@ -70,6 +70,7 @@ void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
 	conn->setWriteCompleteCallback(writeCompleteCallback_);
 	conn->setCloseCallback(
 		std::bind(&TcpServer::removeConnection, this, _1));
+	
 	ioLoop->runInLoop(
 		std::bind(&TcpConnection::connectEstablished, conn));
 }
@@ -85,9 +86,11 @@ void TcpServer::removeConnectionInLoop(TcpConnection *conn)
 	loop_->assertInLoopThread();
 	LOG_INFO << "TcpServer::removeConnection [" << name_
 		     << "] - connection " << conn->name();
+	conn->connectDestroyed();
 	size_t n = connections_.erase(conn->name());
 	assert(n == 1); (void)n;
-	EventLoop *ioLoop = conn->getLoop();
+	// FIXME bug here, because if a shared_ptr is erased from map, it will be destroyed, how to call its function
+	/*EventLoop *ioLoop = conn->getLoop();
 	ioLoop->queueInLoop(
-		std::bind(&TcpConnection::connectDestroyed, conn));
+		std::bind(&TcpConnection::connectDestroyed, conn));*/
 }

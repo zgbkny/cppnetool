@@ -64,6 +64,8 @@ public:
 	void *getPair() { return pair_; }
 	void setPair(void *pair) { pair_ = pair; }
 
+	Buffer& inputBuffer() { return inputBuffer_; }
+
 private:
 	
 

@@ -21,7 +21,7 @@ Channel::Channel(EventLoop *loop, int fdArg)
 }
 Channel::~Channel()
 {
-	assert(!eventHandling_);
+	assert(eventHandling_);
 }
 void Channel::update()
 {

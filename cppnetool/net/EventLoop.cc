@@ -157,6 +157,7 @@ void EventLoop::runInLoop(const Functor &cb)
 }
 void EventLoop::queueInLoop(const Functor &cb)
 {
+	LOG_DEBUG << "EventLoop::queueInLoop";
 	{
 		MutexLockGuard lock(mutex_);
 		pendingFunctors_.push_back(cb);

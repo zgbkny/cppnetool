@@ -34,7 +34,8 @@ TcpClient::TcpClient(EventLoop *loop, const InetAddress &serverAddr)
 		retry_(false),
 		connect_(false),
 		state_(false),
-		nextConnId_(1)
+		nextConnId_(1),
+		pair_(NULL)
 {
 	connector_->setNewConnectionCallback(
 		std::bind(&TcpClient::newConnection, this, _1));
@@ -100,7 +101,10 @@ void TcpClient::newConnection(int sockfd)
 											sockfd,
 											localAddr,
 											peerAddr));
-
+	if (pair_ != NULL) {
+		conn->setPair(pair_);
+		setPair(NULL);
+	}
 	conn->setConnectionCallback(connectionCallback_);
 	conn->setMessageCallback(messageCallback_);
 	conn->setWriteCompleteCallback(writeCompleteCallback_);
@@ -111,22 +115,26 @@ void TcpClient::newConnection(int sockfd)
 		connection_ = conn;
 	}
 	conn->connectEstablished();
+	
 }
 
 void TcpClient::removeConnection(TcpConnection *conn)
 {
+	LOG_DEBUG << "TcpClient::removeConnection";
 	state_ = false;
 	loop_->assertInLoopThread();
 	assert(loop_ == conn->getLoop());
-
+	connection_->connectDestroyed();
 	{
 		MutexLockGuard lock(mutex_);
 	    assert(connection_.get() == conn);
 		connection_.reset();
+		LOG_DEBUG << "TcpClient::removeConnection" << "check";
 	}
 
-	loop_->queueInLoop(
-		std::bind(&TcpConnection::connectDestroyed, conn));
+	//loop_->queueInLoop(
+	//	std::bind(&TcpConnection::connectDestroyed, conn));
+	
 	if (retry_ && connect_) {
 		LOG_INFO << "TcpClient::connect[" << this << "] - Reconnecting to "
 					<< connector_->serverAddress().toHostPort();

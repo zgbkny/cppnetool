@@ -54,10 +54,13 @@ public:
 		else return NULL;
 	}
 
+	void *getPair() { return pair_; }
+	void setPair(void *pair) { pair_ = pair; } 
+
 private:
 	void newConnection(int sockfd);
 	void removeConnection(TcpConnection *conn);
-
+	void *pair_;
 	EventLoop *loop_;
 	ConnectorPtr connector_; // avoid revealing Connector
 	ConnectionCallback connectionCallback_;

@@ -22,7 +22,8 @@ TcpConnection::TcpConnection(EventLoop* loop,
 		socket_(new Socket(sockfd)),
 		channel_(new Channel(loop, sockfd)),
 		localAddr_(localAddr),
-		peerAddr_(peerAddr)
+		peerAddr_(peerAddr),
+		pair_(NULL)
 {
 	LOG_DEBUG << "TcpConnection::ctor[" <<  name_ << "] at " << this
 			<< " fd=" << sockfd;
@@ -44,6 +45,7 @@ TcpConnection::~TcpConnection()
 
 void TcpConnection::connectEstablished()
 {
+	LOG_TRACE << "TcpConnection::connectEstablished";
 	loop_->assertInLoopThread();
 	assert(state_ == kConnecting);
 	setState(kConnected);
@@ -54,6 +56,7 @@ void TcpConnection::connectEstablished()
 
 void TcpConnection::connectDestroyed()
 {
+	LOG_DEBUG << "TcpConnection::connectDestroyed";
 	loop_->assertInLoopThread();
 	assert(state_ == kConnected || state_ == kDisconnecting);
 	setState(kDisconnected);
@@ -67,6 +70,7 @@ void TcpConnection::connectDestroyed()
 
 void TcpConnection::handleRead(Timestamp receiveTime)
 {
+	LOG_TRACE << "TcpConnection::handleRead";
 	int savedErrno;
 	ssize_t n = inputBuffer_.readFd(channel_->fd(), &savedErrno);
 	if (n > 0) {
@@ -128,7 +132,7 @@ void TcpConnection::handleError()
 void TcpConnection::handleClose()
 {
 	loop_->assertInLoopThread();
-	LOG_TRACE << "TcpConnection::handleClose state = " << state_;
+	LOG_DEBUG << "TcpConnection::handleClose state = " << state_;
 	assert(state_ == kConnected);
 	// we don't close fd, leave it to dtor, so we can find leaks easily
 	channel_->disableAll();
@@ -155,6 +159,7 @@ void TcpConnection::sendInLoop(const std::string &message)
 	// if nothing in output queue, try writing directly
 	if (!channel_->isWriting() && outputBuffer_.readableBytes() == 0) {
 		nwrote = ::write(channel_->fd(), message.data(), message.size());
+		LOG_INFO << "TcpConnection::sendInLoop:nwrote:" << nwrote;
 		if (nwrote >= 0) {
 			if (static_cast<size_t>(nwrote) < message.size()) {
 				LOG_TRACE << "i am going to write more data";
