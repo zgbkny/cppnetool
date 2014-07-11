@@ -10,7 +10,7 @@ int main()
 	LogStream os;
 	os << "hello";
 	std::cout << "test" << std::endl;
-	Proxy proxy(9888, "192.168.0.199", 80);
+	Proxy proxy(80, "192.168.0.199", 80);
 	proxy.set_conf();
 	proxy.init();
 	proxy.loop();

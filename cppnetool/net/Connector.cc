@@ -104,7 +104,7 @@ void Connector::stop()
 void Connector::connecting(int sockfd)
 {
 	setState(kConnecting);
-	assert(!channel_);
+	//assert(!channel_);
 	channel_.reset(new Channel(loop_, sockfd));
 	channel_->setWriteCallback(
 		std::bind(&Connector::handleWrite, this));

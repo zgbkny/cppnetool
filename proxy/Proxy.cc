@@ -20,28 +20,36 @@ void Proxy::onTcpClientConnection_(TcpConnection *conn)
 			 << conn->peerAddress().toHostPort().c_str();
 
 		if (conn->getPair() != NULL) {
+			LOG_DEBUG << "pair not NULL";
 			std::pair<TcpServer *, const std::string&> *p = 
 				static_cast<std::pair<TcpServer *, const std::string&> *>(conn->getPair());
 			TcpConnectionPtr connPtr = p->first->getConn(p->second);
-			conn->send(connPtr->inputBuffer().retrieveAsString());
+			if (connPtr != NUll)
+				conn->send(connPtr->inputBuffer().retrieveAsString());
+			else
+				LOG_DEBUG << " Proxy::onTcpClientConnection_ client closed already ! ";
 		} else {
-			LOG_INFO << "pair NULL";
+			LOG_DEBUG << "pair NULL";
 		}
 	} else {
-		LOG_INFO << "onTcpClientConnection(): connection [" << conn->name().c_str() << "] is down";
+		LOG_DEBUG << "onTcpClientConnection(): connection [" << conn->name().c_str() << "] is down";
 	}
 }
 
 void Proxy::onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)
 {
 	LOG_INFO << "onTcpClientMessage(): received" << buf->readableBytes() 
-			  << "bytes from connection [" << conn->name().c_str() 
-			  << "] at " << receiveTime.toFormattedString().c_str();
+			  << "bytes from connection [" << conn->name()
+			  << "] at " << receiveTime.toFormattedString();
 	if (conn->getPair() != NULL) {
+		LOG_DEBUG << "pair not NULL";
 		std::pair<TcpServer *, const std::string&> *p = 
 			static_cast<std::pair<TcpServer *, const std::string&> *>(conn->getPair());
 		TcpConnectionPtr connPtr = p->first->getConn(p->second);
-		connPtr->send(buf->retrieveAsString());
+		if (connPtr != NULL) 
+			connPtr->send(buf->retrieveAsString());
+		else 
+			LOG_DEBUG << " Proxy::onTcpClientMessage_ client closed already ! ";
 	} else {
 		LOG_INFO << "pair NULL";
 	}
@@ -61,6 +69,7 @@ void Proxy::onTcpServerConnection_(TcpConnection *conn)
 }
 void Proxy::onTcpServerMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)
 {
+
 	LOG_INFO << "onTcpServerMessage(): received" << buf->readableBytes() 
 			  << "bytes from connection [" << conn->name().c_str() 
 			  << "] at " << receiveTime.toFormattedString().c_str();
