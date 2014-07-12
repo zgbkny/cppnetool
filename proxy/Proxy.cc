@@ -21,10 +21,12 @@ void Proxy::onTcpClientConnection_(TcpConnection *conn)
 
 		if (conn->getPair() != NULL) {
 			LOG_DEBUG << "pair not NULL";
-			std::pair<TcpServer *, const std::string&> *p = 
-				static_cast<std::pair<TcpServer *, const std::string&> *>(conn->getPair());
+			std::pair<TcpServer *, const std::string> *p = 
+				static_cast<std::pair<TcpServer *, const std::string> *>(conn->getPair());
+			LOG_DEBUG << "pair not NULL1" << p->second;
 			TcpConnectionPtr connPtr = p->first->getConn(p->second);
-			if (connPtr != NUll)
+			LOG_DEBUG << "pair not NULL2";
+			if (connPtr != NULL)
 				conn->send(connPtr->inputBuffer().retrieveAsString());
 			else
 				LOG_DEBUG << " Proxy::onTcpClientConnection_ client closed already ! ";
@@ -43,8 +45,8 @@ void Proxy::onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp rece
 			  << "] at " << receiveTime.toFormattedString();
 	if (conn->getPair() != NULL) {
 		LOG_DEBUG << "pair not NULL";
-		std::pair<TcpServer *, const std::string&> *p = 
-			static_cast<std::pair<TcpServer *, const std::string&> *>(conn->getPair());
+		std::pair<TcpServer *, const std::string> *p = 
+			static_cast<std::pair<TcpServer *, const std::string> *>(conn->getPair());
 		TcpConnectionPtr connPtr = p->first->getConn(p->second);
 		if (connPtr != NULL) 
 			connPtr->send(buf->retrieveAsString());
@@ -80,8 +82,8 @@ void Proxy::onTcpServerMessage_(TcpConnection *conn, Buffer *buf, Timestamp rece
 		std::bind(&Proxy::onTcpClientConnection_, this, _1));
 	tcpClient->setMessageCallback(
 		std::bind(&Proxy::onTcpClientMessage_, this, _1, _2, _3));
-	std::pair<TcpServer *, const std::string&> *p
-		= new std::pair<TcpServer *, const std::string&>(&tcpServer_, conn->name());
+	std::pair<TcpServer *, const std::string> *p
+		= new std::pair<TcpServer *, const std::string>(&tcpServer_, conn->name());
 	tcpClient->setPair(static_cast<void *>(p));
 	qTcpClient_.push(tcpClient);
 	conn->setPair(tcpClient);

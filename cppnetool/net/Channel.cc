@@ -21,6 +21,7 @@ Channel::Channel(EventLoop *loop, int fdArg)
 }
 Channel::~Channel()
 {
+	LOG_DEBUG << "Channel::~Channel" << this->fd_;
 	assert(eventHandling_);
 }
 void Channel::update()
@@ -30,6 +31,7 @@ void Channel::update()
 void Channel::handleEvent(Timestamp receiveTime)
 {
 	eventHandling_ = true;
+	LOG_DEBUG << "Channel::handleEvent" << this->fd_;
 	if (revents_ & POLLNVAL) {
 		LOG_WARN << "Channel::handle_event() POLLNVAL";
 	}
