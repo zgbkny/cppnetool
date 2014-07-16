@@ -22,7 +22,7 @@ Channel::Channel(EventLoop *loop, int fdArg)
 Channel::~Channel()
 {
 	LOG_DEBUG << "Channel::~Channel" << this->fd_;
-	assert(eventHandling_);
+	//assert(!eventHandling_);
 }
 void Channel::update()
 {
@@ -38,18 +38,27 @@ void Channel::handleEvent(Timestamp receiveTime)
 
 	if ((revents_ & POLLHUP) && !(revents_ & POLLIN)) {
 		LOG_WARN << "Channel::handle_event() POLLHUP";
-		if (closeCallback_) closeCallback_();
+		if (closeCallback_) {
+			eventHandling_ = false;
+			closeCallback_();
+		}
 	}
 
 	if (revents_ & (POLLERR | POLLNVAL)) {
-		if (errorCallback_) errorCallback_();
+		LOG_WARN << "Channel::handle_event() ERROR";
+		if (errorCallback_) {
+			eventHandling_ = false;
+			errorCallback_();
+		}
 	}
 
 	if (revents_ & (POLLIN | POLLPRI | POLLRDHUP)) {
+		LOG_WARN << "Channel::handle_event() READ";
 		if (readCallback_) readCallback_(receiveTime); 
 	}
 
 	if (revents_ & POLLOUT) {
+		LOG_WARN << "Channel::handle_event() WRITE";
 		if (writeCallback_) writeCallback_();
 	}
 	eventHandling_ = false;

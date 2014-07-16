@@ -70,7 +70,7 @@ void TcpConnection::connectDestroyed()
 
 void TcpConnection::handleRead(Timestamp receiveTime)
 {
-	LOG_TRACE << "TcpConnection::handleRead";
+	LOG_DEBUG << "TcpConnection::handleRead";
 	int savedErrno;
 	ssize_t n = inputBuffer_.readFd(channel_->fd(), &savedErrno);
 	if (n > 0) {
@@ -133,7 +133,7 @@ void TcpConnection::handleClose()
 {
 	loop_->assertInLoopThread();
 	LOG_DEBUG << "TcpConnection::handleClose state = " << state_;
-	assert(state_ == kConnected);
+	//assert(state_ == kConnected);
 	// we don't close fd, leave it to dtor, so we can find leaks easily
 	channel_->disableAll();
 	// must be the last line 
@@ -159,7 +159,7 @@ void TcpConnection::sendInLoop(const std::string &message)
 	// if nothing in output queue, try writing directly
 	if (!channel_->isWriting() && outputBuffer_.readableBytes() == 0) {
 		nwrote = ::write(channel_->fd(), message.data(), message.size());
-		LOG_INFO << "TcpConnection::sendInLoop:nwrote:" << nwrote;
+		LOG_DEBUG << "TcpConnection::sendInLoop:nwrote:" << nwrote << "errno" << errno;
 		if (nwrote >= 0) {
 			if (static_cast<size_t>(nwrote) < message.size()) {
 				LOG_TRACE << "i am going to write more data";

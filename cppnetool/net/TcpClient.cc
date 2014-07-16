@@ -121,13 +121,13 @@ void TcpClient::newConnection(int sockfd)
 void TcpClient::removeConnection(TcpConnection *conn)
 {
 	LOG_DEBUG << "TcpClient::removeConnection";
-	state_ = false;
 	loop_->assertInLoopThread();
 	assert(loop_ == conn->getLoop());
 	connection_->connectDestroyed();
 	{
 		MutexLockGuard lock(mutex_);
 	    assert(connection_.get() == conn);
+	    state_ = false;
 		connection_.reset();
 		LOG_DEBUG << "TcpClient::removeConnection" << "check";
 	}

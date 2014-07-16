@@ -11,6 +11,8 @@
 #include <cppnetool/base/Timestamp.h>
 #include <cppnetool/base/Logging.h>
 
+#include <proxy/Session.h>
+
 #include <queue>
 
 using namespace cppnetool::net;
@@ -37,9 +39,14 @@ private:
 	void onTcpServerMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime);
 	InetAddress listenAddr_;
 	InetAddress serverAddr_;
+
 	EventLoop loop_;
 	TcpServer tcpServer_;
-	std::queue<TcpClient *> qTcpClient_;
+	ServerManager serverManager_;
+	
+	typedef std::shared_ptr<Session> SessionPtr;
+	typedef std::map<std::string, SessionPtr> SessionMap;
+	SessionMap sessionMap_;
 };
 
 #endif /*PROXY_H*/

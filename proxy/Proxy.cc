@@ -8,7 +8,8 @@ Proxy::Proxy(uint16_t port, const std::string& ip, uint16_t servPort)
 	:	listenAddr_(port),
 		serverAddr_(ip, servPort),
 		loop_(),
-		tcpServer_(&loop_, listenAddr_)
+		tcpServer_(&loop_, listenAddr_),
+		serverManager_(ip, servPort, &loop_)
 {
 
 }
@@ -16,7 +17,7 @@ Proxy::Proxy(uint16_t port, const std::string& ip, uint16_t servPort)
 void Proxy::onTcpClientConnection_(TcpConnection *conn)
 {
 	if (conn->connected()) {
-		LOG_INFO << "onTcpClientConnection(): new connection [" << conn->name().c_str() << "] from " 
+		LOG_TRACE << "onTcpClientConnection(): new connection [" << conn->name().c_str() << "] from " 
 			 << conn->peerAddress().toHostPort().c_str();
 
 		if (conn->getPair() != NULL) {
@@ -40,7 +41,7 @@ void Proxy::onTcpClientConnection_(TcpConnection *conn)
 
 void Proxy::onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)
 {
-	LOG_INFO << "onTcpClientMessage(): received" << buf->readableBytes() 
+	LOG_TRACE << "onTcpClientMessage(): received" << buf->readableBytes() 
 			  << "bytes from connection [" << conn->name()
 			  << "] at " << receiveTime.toFormattedString();
 	if (conn->getPair() != NULL) {
@@ -53,7 +54,7 @@ void Proxy::onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp rece
 		else 
 			LOG_DEBUG << " Proxy::onTcpClientMessage_ client closed already ! ";
 	} else {
-		LOG_INFO << "pair NULL";
+		LOG_TRACE << "pair NULL";
 	}
 	
 }
@@ -62,21 +63,28 @@ void Proxy::onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp rece
 void Proxy::onTcpServerConnection_(TcpConnection *conn)
 {
 	if (conn->connected()) {
-		LOG_INFO << "onTcpServerConnection(): new connection [" << conn->name().c_str() << "] from " 
+		LOG_TRACE << "onTcpServerConnection(): new connection [" << conn->name().c_str() << "] from " 
 			 << conn->peerAddress().toHostPort().c_str();
+		std::pair<TcpServer *, const std::string> *p
+			= new std::pair<TcpServer *, const std::string>(&tcpServer_, conn->name());
+		TcpClient *tcpClient = serverManager_.getTcpClient();
+		assert(tcpClient != NULL);
+		assert(tcpClient->getConn() != NULL)
+		std::string name = "session " + conn->name() + "->" + tcpClient->getConn()->name();
+		SessionPtr sessionPtr(new Session(), name);
 	} else {
-		LOG_INFO << "onTcpServerConnection(): connection [" << conn->name().c_str() << "] is down";
+		LOG_TRACE << "onTcpServerConnection(): connection [" << conn->name().c_str() << "] is down";
 	}
 	
 }
 void Proxy::onTcpServerMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)
 {
 
-	LOG_INFO << "onTcpServerMessage(): received" << buf->readableBytes() 
+	LOG_TRACE << "onTcpServerMessage(): received" << buf->readableBytes() 
 			  << "bytes from connection [" << conn->name().c_str() 
 			  << "] at " << receiveTime.toFormattedString().c_str();
-
-	//LOG_INFO << "onTcpServerMessage(): [" << buf->retrieveAsString().c_str() << "]";
+/*
+	//LOG_TRACE << "onTcpServerMessage(): [" << buf->retrieveAsString().c_str() << "]";
 	TcpClient *tcpClient = new TcpClient(&loop_, serverAddr_);
 	tcpClient->setConnectionCallback(
 		std::bind(&Proxy::onTcpClientConnection_, this, _1));
@@ -87,7 +95,7 @@ void Proxy::onTcpServerMessage_(TcpConnection *conn, Buffer *buf, Timestamp rece
 	tcpClient->setPair(static_cast<void *>(p));
 	qTcpClient_.push(tcpClient);
 	conn->setPair(tcpClient);
-	tcpClient->connect();
+	tcpClient->connect();*/
 }
 
 void Proxy::set_conf()
@@ -101,8 +109,6 @@ bool Proxy::init()
 	LOG_TRACE << "Proxy::init";
 	tcpServer_.setConnectionCallback(
 		std::bind(&Proxy::onTcpServerConnection_, this, _1));
-	tcpServer_.setMessageCallback(
-		std::bind(&Proxy::onTcpServerMessage_, this, _1, _2, _3));
 	tcpServer_.start();
 	return true;
 }
