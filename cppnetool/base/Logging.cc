@@ -22,6 +22,8 @@ namespace cppnetool
 
 	Logger::LogLevel initLogLevel()
 	{
+		return Logger::TRACE;
+
 		if (::getenv("CPPNETOOL_LOG_TRACE"))
 			return Logger::TRACE;
 		else 
@@ -71,9 +73,9 @@ Logger::Impl::Impl(LogLevel level, int savedErrno, const char *file, int line)
 	basename_ = (path_sep_pos != NULL) ? path_sep_pos + 1 : fullname_;
 
 	formatTime();
-	Fmt tid("%5d", CurrentThread::tid());
-	assert(tid.length() == 5);
-	stream_ << T(tid.data(), 5);
+	Fmt tid("tid:%5d ", CurrentThread::tid());
+	assert(tid.length() == 10);
+	stream_ << T(tid.data(), 10);
 	stream_ << T(LogLevelName[level], 6);
 	if (savedErrno != 0)
 	{

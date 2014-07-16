@@ -5,6 +5,9 @@
 #include <cppnetool/net/EventLoop.h>
 #include <string>
 
+using namespace cppnetool;
+using namespace cppnetool::net;
+
 class ServerManager {
 public:
 	ServerManager(std::string ip, int port, EventLoop *loop);

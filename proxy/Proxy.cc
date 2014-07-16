@@ -62,6 +62,7 @@ void Proxy::onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp rece
 
 void Proxy::onTcpServerConnection_(TcpConnection *conn)
 {
+	LOG_DEBUG << "here";
 	if (conn->connected()) {
 		LOG_TRACE << "onTcpServerConnection(): new connection [" << conn->name().c_str() << "] from " 
 			 << conn->peerAddress().toHostPort().c_str();
@@ -69,9 +70,9 @@ void Proxy::onTcpServerConnection_(TcpConnection *conn)
 			= new std::pair<TcpServer *, const std::string>(&tcpServer_, conn->name());
 		TcpClient *tcpClient = serverManager_.getTcpClient();
 		assert(tcpClient != NULL);
-		assert(tcpClient->getConn() != NULL)
-		std::string name = "session " + conn->name() + "->" + tcpClient->getConn()->name();
-		SessionPtr sessionPtr(new Session(), name);
+		//assert(tcpClient->getConn() != NULL);
+		std::string name = "session " + conn->name();// + "->" + tcpClient->getConn()->name();
+		SessionPtr sessionPtr(new Session(p, tcpClient, name));
 	} else {
 		LOG_TRACE << "onTcpServerConnection(): connection [" << conn->name().c_str() << "] is down";
 	}

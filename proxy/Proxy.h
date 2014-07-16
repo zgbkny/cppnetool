@@ -12,6 +12,9 @@
 #include <cppnetool/base/Logging.h>
 
 #include <proxy/Session.h>
+#include <proxy/ServerManager.h>
+
+#include <string>
 
 #include <queue>
 
