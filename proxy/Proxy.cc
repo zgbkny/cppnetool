@@ -4,14 +4,14 @@
 #include <iostream>
 
 
-Proxy::Proxy(uint16_t port, const std::string& ip, uint16_t servPort)
+Proxy::Proxy(uint16_t port, const std::string& ip, uint16_t servPort, int size)
 	:	listenAddr_(port),
 		serverAddr_(ip, servPort),
 		loop_(),
 		tcpServer_(&loop_, listenAddr_),
 		serverManager_(ip, servPort, &loop_)
 {
-
+	serverManager_.init(size);
 }
 
 void Proxy::onTcpClientConnection_(TcpConnection *conn)

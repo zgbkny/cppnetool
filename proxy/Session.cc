@@ -15,6 +15,23 @@ Session::Session(std::pair<TcpServer *, const std::string> *serverPair,
 	}
 }
 
+void Session::onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)
+{
+	void Proxy::onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)
+{
+	LOG_TRACE << "onTcpClientMessage(): received" << buf->readableBytes() 
+			  << "bytes from connection [" << conn->name()
+			  << "] at " << receiveTime.toFormattedString();
+	if (conn->getPair() != NULL) {
+		
+	} else {
+		LOG_TRACE << "pair NULL";
+	}
+	
+}
+}
+
+
 void Session::onTcpServerMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)
 {
 

@@ -20,7 +20,7 @@ public:
 
 private:
 	//void onTcpClientConnection_(TcpConnection *conn);
-	//void onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime);
+	void onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime);
 	void onTcpServerMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime);
 
 	std::pair<TcpServer *, const std::string> *serverPair_;
