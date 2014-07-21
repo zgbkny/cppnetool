@@ -25,7 +25,7 @@ using std::placeholders::_2;
 using std::placeholders::_3;
 class Proxy {
 public:
-	Proxy(uint16_t port, const std::string& ip, uint16_t servPort);
+	Proxy(uint16_t port, const std::string& ip, uint16_t servPort, int size);
 	void set_conf();
 	void valid_conf();
 	bool init();

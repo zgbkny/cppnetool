@@ -4,6 +4,7 @@
 #include <cppnetool/net/TcpServer.h>
 #include <cppnetool/net/TcpClient.h>
 #include <cppnetool/net/TcpConnection.h>
+#include <cppnetool/net/EventLoop.h>
 #include <string>
 #include <utility>
 using namespace cppnetool;
@@ -25,6 +26,7 @@ private:
 
 	std::pair<TcpServer *, const std::string> *serverPair_;
 	TcpClient *tcpClient_;
+	EventLoop *loop_;
 	std::string name_;
 };
 

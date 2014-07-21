@@ -67,7 +67,7 @@ void testTcpServer() {
 }
 
 void proxy() {
-	Proxy proxy(80, "192.168.0.199", 80);
+	Proxy proxy(80, "192.168.0.199", 80, 100);
 	proxy.set_conf();
 	proxy.init();
 	proxy.loop();

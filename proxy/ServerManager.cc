@@ -9,7 +9,8 @@ ServerManager::ServerManager(std::string ip, int port, EventLoop *loop)
 
 void ServerManager::onTcpClientConnection_(TcpConnection *conn)
 {
-
+	TcpClient *tcpClient = (TcpClient *)conn->getPair();
+	activeTcpClients_.push(tcpClient);
 }
 
 bool ServerManager::init(int size)
@@ -19,13 +20,14 @@ bool ServerManager::init(int size)
 		tcpClient->setConnectionCallback(
 			std::bind(&ServerManager::onTcpClientConnection_, this, _1));
 		tcpClient->setPair(tcpClient);
-		newTcpClients_.add(tcpClient);
-		tcpClient_.connect();
+		newTcpClients_.push(tcpClient);
+		tcpClient->connect();
 	}
 }
 
 TcpClient *ServerManager::getTcpClient()
 {
-	TcpClient *tcpClient = new TcpClient(loop_, serverAddr_);
+	TcpClient *tcpClient = activeTcpClients_.front();
+	activeTcpClients_.pop();
 	return tcpClient;
 }

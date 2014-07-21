@@ -71,7 +71,7 @@ void Proxy::onTcpServerConnection_(TcpConnection *conn)
 		TcpClient *tcpClient = serverManager_.getTcpClient();
 		assert(tcpClient != NULL);
 		//assert(tcpClient->getConn() != NULL);
-		std::string name = "session " + conn->name();// + "->" + tcpClient->getConn()->name();
+		std::string name = "session " + conn->name() + "->" + tcpClient->getConn()->name();
 		SessionPtr sessionPtr(new Session(p, tcpClient, name));
 	} else {
 		LOG_TRACE << "onTcpServerConnection(): connection [" << conn->name().c_str() << "] is down";
