@@ -50,6 +50,7 @@ void Poller::fillActiveChannels(int numEvents, ChannelList *activeChannels) cons
 
 void Poller::updateChannel(Channel *channel)
 {
+	LOG_TRACE << "Poller::updateChannel " << channel->index();
 	assertInLoopThread();
 	if (channel->index() < 0) {
 		assert(channels_.find(channel->fd()) == channels_.end());
@@ -61,6 +62,7 @@ void Poller::updateChannel(Channel *channel)
 		int idx = static_cast<int>(pollfds_.size()) - 1;
 		channel->set_index(idx);
 		channels_[pfd.fd] = channel;
+		LOG_TRACE << "Poller::updateChannel event:" << pfd.events << " fd:" << pfd.fd;
 	} else {
 		assert(channels_.find(channel->fd()) != channels_.end());
 		assert(channels_[channel->fd()] == channel);
@@ -73,17 +75,19 @@ void Poller::updateChannel(Channel *channel)
 		if (channel->isNoneEvent()) {
 			pfd.fd = - channel->fd() - 1;
 		}
+		LOG_TRACE << "Poller::updateChannel event:" << pfd.events << " fd:" << pfd.fd;
 	}
 }
 
 void Poller::removeChannel(Channel *channel)
 {
+	LOG_TRACE << "Poller::removeChannel " << channel->index();
 	assertInLoopThread();
-	LOG_TRACE << "fd = " << channel->fd();
 	assert(channels_.find(channel->fd()) != channels_.end());
 	assert(channels_[channel->fd()] == channel);
 	assert(channel->isNoneEvent());
 	int idx = channel->index();
+	LOG_TRACE << "fd=" << channel->fd();
 	assert(0 <= idx && idx < static_cast<int>(pollfds_.size()));
 	const struct pollfd &pfd = pollfds_[idx]; (void)pfd;
 	assert(pfd.fd == - channel->fd() - 1 && pfd.events == channel->events());

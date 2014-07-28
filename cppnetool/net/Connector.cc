@@ -19,13 +19,22 @@ Connector::Connector(EventLoop *loop, const InetAddress &serverAddr)
 		retryDelayMs_(kInitRetryDelayMs),
 		timerId_(NULL)
 {
-	LOG_DEBUG << "ctor[" << this << "]";
+	LOG_DEBUG << "Connector ctor[" << this << "]";
 }
 Connector::~Connector()
 {
-	LOG_DEBUG << "dtor[" << this << "]";
+	LOG_DEBUG << "Connector dtor[" << this << "]";
 	loop_->cancel(timerId_);
-	assert(!channel_);
+	//assert(!channel_);
+	if (state_ == kConnecting) {
+		assert(channel_ != NULL);
+		//if (channel_->isReading() || channel_->isWriting()) {
+		channel_->disableAll();
+		loop_->removeChannel(channel_.get());
+	}
+	
+	loop_->cancel(timerId_);
+
 }
 
 void Connector::start()
@@ -38,7 +47,7 @@ void Connector::start()
 void Connector::startInLoop()
 {
 	loop_->assertInLoopThread();
-	assert(state_ == kDisconnected);
+	//assert(state_ == kDisconnected);
 	if (connect_) {
 		connect();
 	} else {
@@ -103,6 +112,7 @@ void Connector::stop()
 
 void Connector::connecting(int sockfd)
 {
+	LOG_TRACE << "Connector::connecting";
 	setState(kConnecting);
 	//assert(!channel_);
 	channel_.reset(new Channel(loop_, sockfd));
@@ -110,7 +120,7 @@ void Connector::connecting(int sockfd)
 		std::bind(&Connector::handleWrite, this));
 	channel_->setErrorCallback(
 		std::bind(&Connector::handleError, this));
-
+	channel_->disableAll();
 	channel_->enableWriting();
 }
 
@@ -119,31 +129,33 @@ int Connector::removeAndResetChannel()
 	channel_->disableAll();
 	loop_->removeChannel(channel_.get());
 	int sockfd = channel_->fd();
-	loop_->queueInLoop(
-		std::bind(&Connector::resetChannel, this));
+	//resetChannel();
 	return sockfd;
 }
 
 void Connector::resetChannel()
 {
+	LOG_TRACE << "Connector::resetChannel";
 	channel_.reset();
+	channel_ = NULL;
 }
 
 void Connector::handleWrite()
 {
-	LOG_TRACE << "Connector::handleWrite" << state_;
+	LOG_TRACE << "Connector::handleWrite state_:" << state_;
 
 	if (state_ == kConnecting) {
 		int sockfd = removeAndResetChannel();
 		int err = sockets::getSocketError(sockfd);
 		if (err) {
-			LOG_WARN << "Connector::handleWrite - SO_ERROR = "
+			LOG_TRACE << "Connector::handleWrite - SO_ERROR = "
 					 << err << " " << strerror(err);
 			retry(sockfd);
 		} else if (sockets::isSelfConnect(sockfd)){
-			LOG_WARN << "Connector::handleWrite - Self connect";
+			LOG_TRACE << "Connector::handleWrite - Self connect";
 			retry(sockfd);
 		} else {
+			LOG_TRACE << "Connector::handleWrite - nomal ";
 			setState(kConnected);
 			if (connect_) {
 				newConnectionCallback_(sockfd);
@@ -151,8 +163,11 @@ void Connector::handleWrite()
 				sockets::close(sockfd);
 			}
 		}
+		resetChannel();
+		assert(channel_ == NULL);
 	} else {
 		assert(state_ == kDisconnected);
+		LOG_TRACE << "Connector::handleWrite - kDisconnected ";
 	}
 
 }
@@ -160,7 +175,7 @@ void Connector::handleWrite()
 void Connector::handleError()
 {
 	LOG_ERROR << "Connector::handleError";
-	assert(state_ == kConnecting);
+	//assert(state_ == kConnecting);
 
 	int sockfd = removeAndResetChannel();
 	int err = sockets::getSocketError(sockfd);

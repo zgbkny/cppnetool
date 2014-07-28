@@ -4,61 +4,28 @@
 #include <iostream>
 
 
+
+
 Proxy::Proxy(uint16_t port, const std::string& ip, uint16_t servPort, int size)
 	:	listenAddr_(port),
 		serverAddr_(ip, servPort),
-		loop_(),
-		tcpServer_(&loop_, listenAddr_),
-		serverManager_(ip, servPort, &loop_)
+		loop_()
 {
-	serverManager_.init(size);
-}
-
-void Proxy::onTcpClientConnection_(TcpConnection *conn)
-{
-	if (conn->connected()) {
-		LOG_TRACE << "onTcpClientConnection(): new connection [" << conn->name().c_str() << "] from " 
-			 << conn->peerAddress().toHostPort().c_str();
-
-		if (conn->getPair() != NULL) {
-			LOG_DEBUG << "pair not NULL";
-			std::pair<TcpServer *, const std::string> *p = 
-				static_cast<std::pair<TcpServer *, const std::string> *>(conn->getPair());
-			LOG_DEBUG << "pair not NULL1" << p->second;
-			TcpConnectionPtr connPtr = p->first->getConn(p->second);
-			LOG_DEBUG << "pair not NULL2";
-			if (connPtr != NULL)
-				conn->send(connPtr->inputBuffer().retrieveAsString());
-			else
-				LOG_DEBUG << " Proxy::onTcpClientConnection_ client closed already ! ";
-		} else {
-			LOG_DEBUG << "pair NULL";
-		}
-	} else {
-		LOG_DEBUG << "onTcpClientConnection(): connection [" << conn->name().c_str() << "] is down";
-	}
-}
-
-void Proxy::onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)
-{
-	LOG_TRACE << "onTcpClientMessage(): received" << buf->readableBytes() 
-			  << "bytes from connection [" << conn->name()
-			  << "] at " << receiveTime.toFormattedString();
-	if (conn->getPair() != NULL) {
-		LOG_DEBUG << "pair not NULL";
-		std::pair<TcpServer *, const std::string> *p = 
-			static_cast<std::pair<TcpServer *, const std::string> *>(conn->getPair());
-		TcpConnectionPtr connPtr = p->first->getConn(p->second);
-		if (connPtr != NULL) 
-			connPtr->send(buf->retrieveAsString());
-		else 
-			LOG_DEBUG << " Proxy::onTcpClientMessage_ client closed already ! ";
-	} else {
-		LOG_TRACE << "pair NULL";
-	}
+	tcpServerLoop_ = &loop_;
+	tcpClientLoop_ = &loop_;
+	loop_.setLoopCallback(
+		std::bind(&Proxy::processSession_, this));
 	
+	tcpServer_ = new TcpServer(&loop_, listenAddr_);
+	serverManager_ = new ServerManager(ip, servPort, &loop_);
+	//serverManager_->init(size);
 }
 
+Proxy::~Proxy()
+{
+	delete tcpServer_;
+	delete serverManager_;
+}
 
 void Proxy::onTcpServerConnection_(TcpConnection *conn)
 {
@@ -66,38 +33,31 @@ void Proxy::onTcpServerConnection_(TcpConnection *conn)
 	if (conn->connected()) {
 		LOG_TRACE << "onTcpServerConnection(): new connection [" << conn->name().c_str() << "] from " 
 			 << conn->peerAddress().toHostPort().c_str();
-		std::pair<TcpServer *, const std::string> *p
-			= new std::pair<TcpServer *, const std::string>(&tcpServer_, conn->name());
-		TcpClient *tcpClient = serverManager_.getTcpClient();
-		assert(tcpClient != NULL);
+		ConnPair *p = new ConnPair(tcpServer_, conn->name());
+		TcpClient *tcpClient = serverManager_->getTcpClient();
+		LOG_DEBUG << "before";
+		//assert(tcpClient != NULL);
 		//assert(tcpClient->getConn() != NULL);
-		std::string name = "session " + conn->name() + "->" + tcpClient->getConn()->name();
-		SessionPtr sessionPtr(new Session(p, tcpClient, name));
+		if (tcpClient != NULL) {
+			assert(tcpClient != NULL);
+			
+			LOG_DEBUG << "TcpClient not null";
+			LOG_DEBUG << conn->name();
+			std::string name = "session " + conn->name();
+			SessionPtr sessionPtr(new Session(serverManager_, p, tcpClient, name));
+			sessionMap_[name] = sessionPtr;
+		} else {
+			LOG_DEBUG << "TcpClient null";
+			//delete tcpClient;
+			pairs_.push(p);
+			conn->disableAll();
+		}
 	} else {
 		LOG_TRACE << "onTcpServerConnection(): connection [" << conn->name().c_str() << "] is down";
 	}
 	
 }
-void Proxy::onTcpServerMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime)
-{
 
-	LOG_TRACE << "onTcpServerMessage(): received" << buf->readableBytes() 
-			  << "bytes from connection [" << conn->name().c_str() 
-			  << "] at " << receiveTime.toFormattedString().c_str();
-/*
-	//LOG_TRACE << "onTcpServerMessage(): [" << buf->retrieveAsString().c_str() << "]";
-	TcpClient *tcpClient = new TcpClient(&loop_, serverAddr_);
-	tcpClient->setConnectionCallback(
-		std::bind(&Proxy::onTcpClientConnection_, this, _1));
-	tcpClient->setMessageCallback(
-		std::bind(&Proxy::onTcpClientMessage_, this, _1, _2, _3));
-	std::pair<TcpServer *, const std::string> *p
-		= new std::pair<TcpServer *, const std::string>(&tcpServer_, conn->name());
-	tcpClient->setPair(static_cast<void *>(p));
-	qTcpClient_.push(tcpClient);
-	conn->setPair(tcpClient);
-	tcpClient->connect();*/
-}
 
 void Proxy::set_conf()
 {
@@ -108,10 +68,52 @@ void Proxy::set_conf()
 bool Proxy::init() 
 {
 	LOG_TRACE << "Proxy::init";
-	tcpServer_.setConnectionCallback(
+	tcpServer_->setConnectionCallback(
 		std::bind(&Proxy::onTcpServerConnection_, this, _1));
-	tcpServer_.start();
+	tcpServer_->start();
+	//tcpServerLoop_->runEvery(1, 
+		//std::bind(&Proxy::processSession_, this));
+	tcpServerLoop_->runEvery(5,
+		std::bind(&Proxy::processQueue_, this));
 	return true;
+}
+
+void Proxy::processSession_()
+{
+	LOG_TRACE << "Proxy::processSession_ " << sessionMap_.size();
+	Timestamp now = Timestamp::now();
+	SessionMap::iterator it;
+	for (it = sessionMap_.begin(); it != sessionMap_.end(); it++) {
+		if (it->second->getClientTime() < now || it->second->getServerTime() < now) {
+			sessionMap_.erase(it->first);
+		}
+		LOG_TRACE << "Proxy::processSession_ check";
+	}
+}
+
+void Proxy::processQueue_()
+{
+	LOG_TRACE << "Proxy::processQueue_";
+	while (!pairs_.empty()) {
+		ConnPair *p = pairs_.front();
+		TcpConnectionPtr connPtr = p->first->getConn(p->second);
+		pairs_.pop();
+		if (connPtr != NULL) {
+			assert(connPtr != NULL);
+			TcpClient *tcpClient = serverManager_->getTcpClient();
+			if (tcpClient != NULL) {
+				connPtr->enableReading();
+				connPtr->enableWriting();
+				std::string name = "session " + connPtr->name();
+				SessionPtr sessionPtr(new Session(serverManager_, p, tcpClient, name));
+				sessionMap_[name] = sessionPtr;
+			} else {
+				//delete tcpClient;
+				pairs_.push(p);
+				break;
+			}
+		}
+	}
 }
 
 bool Proxy::start_proxies()

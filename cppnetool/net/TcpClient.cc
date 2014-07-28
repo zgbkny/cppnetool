@@ -45,18 +45,25 @@ TcpClient::~TcpClient()
 	LOG_INFO << "TcpClient::~TcpClient [" << this
 			 << "] - connector " << connector_.get();
 	TcpConnectionPtr conn;
+	LOG_TRACE << "check";
 	{
 		MutexLockGuard lock(mutex_);
-		conn = connection_;
+		LOG_TRACE << "check1";
+		//conn = connection_;
 	}
-	if (conn) {
-		CloseCallback cb = std::bind(&detail::removeConnection, loop_, _1);
+	if (state_) {
+		LOG_TRACE << "not null";
+		/*CloseCallback cb = std::bind(&detail::removeConnection, loop_, _1);
 		loop_->runInLoop(
-			std::bind(&TcpConnection::setCloseCallback, conn, cb));
+			std::bind(&TcpConnection::setCloseCallback, conn, cb));*/
+		connection_->shutdownAll();
+		connection_->connectDestroyed();
 	} else {
-		connector_->stop();
+		LOG_TRACE << "null";
+		
+		//connector_->stop();
 	    // FIXME: HACK
-		loop_->runAfter(1, std::bind(&detail::removeConnector, connector_));
+		//loop_->runAfter(1, std::bind(&detail::removeConnector, connector_));
 	}
 }
 void TcpClient::connect()
@@ -103,7 +110,6 @@ void TcpClient::newConnection(int sockfd)
 											peerAddr));
 	if (pair_ != NULL) {
 		conn->setPair(pair_);
-		setPair(NULL);
 	}
 	conn->setConnectionCallback(connectionCallback_);
 	conn->setMessageCallback(messageCallback_);
@@ -121,9 +127,14 @@ void TcpClient::newConnection(int sockfd)
 void TcpClient::removeConnection(TcpConnection *conn)
 {
 	LOG_DEBUG << "TcpClient::removeConnection";
+	if (closeCallback_) {
+		closeCallback_(conn);
+	}
+
 	loop_->assertInLoopThread();
 	assert(loop_ == conn->getLoop());
 	connection_->connectDestroyed();
+
 	{
 		MutexLockGuard lock(mutex_);
 	    assert(connection_.get() == conn);
@@ -140,4 +151,16 @@ void TcpClient::removeConnection(TcpConnection *conn)
 					<< connector_->serverAddress().toHostPort();
 		connector_->restart();
 	}
+}
+
+TcpConnectionPtr TcpClient::getConn() {
+
+	if (state_) {
+		LOG_TRACE << "loop_:" << loop_;
+		LOG_TRACE << "getLoop():" << connection_->getLoop();
+		assert(loop_ != NULL);
+		assert(connection_->getLoop() != NULL);
+		assert(loop_ == connection_->getLoop());
+		return connection_;
+	} else return NULL;
 }

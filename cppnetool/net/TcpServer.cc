@@ -83,6 +83,9 @@ void TcpServer::removeConnection(TcpConnection *conn)
 
 void TcpServer::removeConnectionInLoop(TcpConnection *conn)
 {
+	if (closeCallback_) {
+		closeCallback_(conn);
+	}
 	loop_->assertInLoopThread();
 	LOG_INFO << "TcpServer::removeConnection [" << name_
 		     << "] - connection " << conn->name();
@@ -93,4 +96,18 @@ void TcpServer::removeConnectionInLoop(TcpConnection *conn)
 	/*EventLoop *ioLoop = conn->getLoop();
 	ioLoop->queueInLoop(
 		std::bind(&TcpConnection::connectDestroyed, conn));*/
+}
+
+
+void TcpServer::removeConn(std::string name)
+{
+	LOG_TRACE << "TcpServer::removeConn";
+	TcpConnectionPtr connPtr = connections_[name];
+	if (connPtr != NULL) {
+		loop_->assertInLoopThread();
+		connPtr->shutdownAll();
+		connPtr->connectDestroyed();
+		size_t n = connections_.erase(name);
+		assert(n == 1); (void)n;
+	}
 }

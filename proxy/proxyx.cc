@@ -41,19 +41,21 @@ void timeout() {
 		LOG_DEBUG << "connPtr NULL!";
 		//tcpClient->connect();
 	}
+	delete tcpClient;
 }
 
 
 void testTcpClient() {
 
 	loop = new EventLoop();
-	InetAddress serverAddr("192.168.0.137", 8080);
+	InetAddress serverAddr("192.168.0.199", 80);
 	tcpClient = new TcpClient(loop, serverAddr);
 	tcpClient->setConnectionCallback(onTcpClientConnection);
 	tcpClient->setMessageCallback(onTcpClientMessage);
 	tcpClient->connect();
 	loop->runEvery(3, timeout);
 	loop->loop();
+	
 }
 
 void testTcpServer() {
@@ -67,7 +69,7 @@ void testTcpServer() {
 }
 
 void proxy() {
-	Proxy proxy(80, "192.168.0.199", 80, 100);
+	Proxy proxy(80, "192.168.0.199", 80, 5);
 	proxy.set_conf();
 	proxy.init();
 	proxy.loop();

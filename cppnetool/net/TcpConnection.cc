@@ -39,8 +39,23 @@ TcpConnection::TcpConnection(EventLoop* loop,
 
 TcpConnection::~TcpConnection()
 {
-	LOG_DEBUG << "TcpConnection::dtor[" <<  name_ << "] at " << this
-			<< " fd=" << channel_->fd();
+	LOG_DEBUG << "TcpConnection::dtor[" <<  name_ << "] at " << this;
+			//<< " fd=" << channel_->fd();
+}
+
+void TcpConnection::disableAll()
+{
+	channel_->disableAll();
+}
+
+void TcpConnection::enableReading()
+{
+	channel_->enableReading();
+}
+
+void TcpConnection::enableWriting()
+{
+	channel_->enableWriting();
 }
 
 void TcpConnection::connectEstablished()
@@ -93,11 +108,13 @@ void TcpConnection::handleRead(Timestamp receiveTime)
 
 void TcpConnection::handleWrite()
 {
+	LOG_TRACE << "TcpConnection::handleWrite";
 	loop_->assertInLoopThread();
 	if (channel_->isWriting()) {
 		ssize_t n = ::write(channel_->fd(),
 							outputBuffer_.peek(),
 							outputBuffer_.readableBytes());
+		LOG_TRACE << "write " << n;  
 		if (n > 0) {
 			outputBuffer_.retrieve(n);
 			if (outputBuffer_.readableBytes() == 0) {
@@ -197,6 +214,26 @@ void TcpConnection::shutdownInLoop()
 	loop_->assertInLoopThread();
 	if (!channel_->isWriting()) {
 		socket_->shutdownWrite();
+	}
+}
+
+void TcpConnection::shutdownAll()
+{
+	if (state_ == kConnected) {
+		setState(kDisconnecting);
+		loop_->runInLoop(std::bind(&TcpConnection::shutdownAllInLoop, this));
+	}
+}
+
+void TcpConnection::shutdownAllInLoop()
+{
+	loop_->assertInLoopThread();
+	if (!channel_->isWriting()) {
+		socket_->shutdownWrite();
+	}
+
+	if (!channel_->isReading()) {
+		socket_->shutdownRead();
 	}
 }
 

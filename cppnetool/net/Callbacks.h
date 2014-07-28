@@ -16,6 +16,7 @@ class TcpConnection;
 typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 typedef std::shared_ptr<Buffer> BufferPtr;
 typedef std::function<void()> TimerCallback;
+typedef std::function<void()> LoopCallback;
 typedef std::function<void(TcpConnection *)> ConnectionCallback; 
 typedef std::function<void(TcpConnection *,
 							Buffer *buf,

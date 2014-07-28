@@ -34,6 +34,9 @@ class EventLoop
 	void runInLoop(const Functor &cb);
 	void queueInLoop(const Functor &cb);
 
+	void setLoopCallback(LoopCallback cb)
+	{ loopCallback_ = cb; }
+
 	TimerId runAt(const Timestamp& time, const TimerCallback& cb);
 	///
 	/// Runs callback after @c delay seconds.
@@ -68,6 +71,8 @@ class EventLoop
  	void abortNotInLoopThread();
  	void handleRead();  // waked up
 	void doPendingFunctors();
+
+	LoopCallback loopCallback_;
 
  	typedef std::vector<Channel *> ChannelList;
 

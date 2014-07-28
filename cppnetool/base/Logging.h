@@ -5,6 +5,8 @@
 #include <cppnetool/base/Timestamp.h>
 #include <cppnetool/base/LogStream.h>
 
+#include <vector>
+
 namespace cppnetool
 {
 
@@ -83,7 +85,6 @@ public:
 	const char *basename_;
 };
 	Impl impl_;
-	
 };
 /*
 #define LOG_TRACE std::cout
@@ -94,6 +95,8 @@ public:
 #define LOG_FATAL std::cout
 #define LOG_SYSERR std::cout
 #define LOG_SYSFATAL std::cout*/
+
+#define LOG_OUT std::cout
 
 #define LOG_TRACE if (cppnetool::Logger::logLevel() <= cppnetool::Logger::TRACE) \
 	cppnetool::Logger(__FILE__, __LINE__, cppnetool::Logger::TRACE, __func__).stream()

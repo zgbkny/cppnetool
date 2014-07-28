@@ -45,7 +45,12 @@ public:
 	void setWriteCompleteCallback(const WriteCompleteCallback& cb)
 	{ writeCompleteCallback_ = cb; }
 
+	void setCloseCallback(const CloseCallback cb)
+	{ closeCallback_ = cb; }
+
 	TcpConnectionPtr getConn(std::string name) { return connections_[name]; }
+
+	void removeConn(std::string name);
 
 private:
 
@@ -64,6 +69,7 @@ private:
 	ConnectionCallback connectionCallback_;
 	MessageCallback messageCallback_;
 	WriteCompleteCallback writeCompleteCallback_;
+	CloseCallback closeCallback_;
 	bool started_;
 	int nextConnId_;
 	ConnectionMap connections_;

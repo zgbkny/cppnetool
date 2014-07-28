@@ -7,11 +7,16 @@
 #include <cppnetool/net/Callbacks.h>
 #include <string>
 #include <queue>
+#include <map>
 
 using namespace cppnetool;
 using namespace cppnetool::net;
 using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
+
 class ServerManager {
+
 public:
 	ServerManager(std::string ip, int port, EventLoop *loop);
 	TcpClient *getTcpClient();
@@ -35,6 +40,8 @@ public:
 
 private:
 	void onTcpClientConnection_(TcpConnection *conn);
+	void processRequest();
+	void onTcpClientMessage_(TcpConnection *conn, Buffer *buf, Timestamp receiveTime);
 	typedef std::map<std::string, BufferPtr> BufferMap; 
 
 	InetAddress serverAddr_;
@@ -45,5 +52,7 @@ private:
 	BufferMap requestMap_;
 	BufferMap responseMap_;
 };
+
+
 
 #endif /*PROXY_SERVERMANAGER_H*/

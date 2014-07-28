@@ -118,6 +118,14 @@ void sockets::shutdownWrite(int sockfd)
 	}
 }
 
+void sockets::shutdownRead(int sockfd)
+{
+	if (::shutdown(sockfd, SHUT_RD) < 0)
+	{
+		LOG_SYSERR << "sockets::shutdownWrite";
+	}
+}
+
 void sockets::fromHostPort(const char* ip, uint16_t port,
                            struct sockaddr_in* addr)
 {

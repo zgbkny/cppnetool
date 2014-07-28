@@ -38,6 +38,11 @@ public:
 	// Thread safe.
 	void shutdown();
 
+	void shutdownAll();
+
+
+	void close();
+
 	void setTcpNoDelay(bool on);
 	void setKeepAlive(bool on);
 
@@ -66,6 +71,12 @@ public:
 
 	Buffer& inputBuffer() { return inputBuffer_; }
 
+	void disableAll();
+
+	void enableReading();
+
+	void enableWriting();
+
 private:
 	
 
@@ -76,6 +87,7 @@ private:
 	void handleError();
 	void sendInLoop(const std::string& message);
 	void shutdownInLoop();
+	void shutdownAllInLoop();
 
 	void *pair_;
 

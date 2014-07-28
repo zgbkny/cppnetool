@@ -39,6 +39,7 @@ public:
 	void disableWriting() { events_ &= ~kWriteEvent; update(); }
 	void disableAll() { events_ = kNoneEvent; update(); }
 	bool isWriting() const { return events_ & kWriteEvent; }
+	bool isReading() const { return events_ & kReadEvent; }
 
 	// for Poller
 	int index() { return index_; }

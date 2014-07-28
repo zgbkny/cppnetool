@@ -4,6 +4,7 @@
 
 #include <cppnetool/base/Thread.h>
 #include <cppnetool/base/debug.h>
+#include <cppnetool/base/Logging.h>
 #include <pthread.h>
 
 
@@ -18,6 +19,7 @@ public:
 
 	~MutexLock()
 	{
+		LOG_TRACE << "~MutexLock";
 		assert(holder_ == 0);
 		pthread_mutex_destroy(&mutex_);
 	}

@@ -46,7 +46,8 @@ EventLoop::EventLoop()
 		poller_(new Poller(this)),
 		timerQueue_(new TimerQueue(this)),
 		wakeupFd_(createEventfd()),
-		wakeupChannel_(new Channel(this, wakeupFd_))
+		wakeupChannel_(new Channel(this, wakeupFd_)),
+		loopCallback_(NULL)
 {
 	if (t_loopInThisThread) {
 
@@ -65,6 +66,7 @@ EventLoop::~EventLoop()
 }
 void EventLoop::loop()
 {
+	LOG_TRACE << "EventLoop::loop";
 	assert(!looping_);
 	assertInLoopThread();
 	looping_ = true;
@@ -79,9 +81,14 @@ void EventLoop::loop()
 		{
 			(*it)->handleEvent(pollReturnTime_);
 		}
+
+		if (loopCallback_) {
+			loopCallback_();
+		}
 	}
 
 	looping_ = false;
+
 }
 
 void EventLoop::quit()
@@ -91,9 +98,9 @@ void EventLoop::quit()
 
 void EventLoop::abortNotInLoopThread()
 {
-	std::cout << "EventLoop::abortNotInLoopThread - EventLoop " << this
+	LOG_INFO << "EventLoop::abortNotInLoopThread - EventLoop " << this
             << " was created in threadId_ = " << threadId_
-            << ", current thread id = " <<  CurrentThread::tid() << std::endl;
+            << ", current thread id = " <<  CurrentThread::tid();
 }
 
 void EventLoop::wakeup()

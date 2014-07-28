@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <fcntl.h>
 
 #include <sstream>
 
@@ -14,6 +15,10 @@ namespace cppnetool
 	__thread char t_errnobuf[512];
 	__thread char t_time[32];
 	__thread time_t t_lastSecond;
+
+	const int PIDS = 20;
+
+	FILE *file_fd[PIDS];
 
 	const char *strerror_tl(int savedErrno)
 	{
@@ -54,8 +59,34 @@ namespace cppnetool
 		fflush(stdout);
 	}
 
-	Logger::OutputFunc g_output = defaultOutput;
-	Logger::FlushFunc g_flush = defaultFlush;
+	void pidOutput(const char* msg, int len)
+	{
+		int pid = CurrentThread::tid();
+		if (file_fd[pid % PIDS] == NULL) {
+			std::string file = "thread_";
+			char pids[6] = {0, 0, 0, 0, 0, 0};
+			sprintf(pids, "%d", pid);
+			file += pids;
+			file += "_log.txt";
+			FILE *ret = fopen(file.c_str(), "w");
+			if (ret != NULL) {
+				file_fd[pid % PIDS] = ret;
+			} else {
+				file_fd[pid % PIDS] = stdout;
+			}
+		}
+		size_t n = fwrite(msg, 1, len, file_fd[pid % PIDS]);
+		(void)n;
+	}
+
+	void pidFlush()
+	{
+		int pid = CurrentThread::tid();
+		fflush(file_fd[pid % PIDS]);
+	}
+
+	Logger::OutputFunc g_output = pidOutput;
+	Logger::FlushFunc g_flush = pidFlush;
 }
 
 
@@ -135,6 +166,7 @@ Logger::~Logger()
 	impl_.finish();
 	const LogStream::Buffer& buf(stream().buffer());
 	g_output(buf.data(), buf.length());
+	g_flush();
 	if (impl_.level_ == FATAL)
 	{
 		g_flush();
@@ -161,3 +193,4 @@ void Logger::setFlush(FlushFunc flush)
 {
 	g_flush = flush;
 }
+

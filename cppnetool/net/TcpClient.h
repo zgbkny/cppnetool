@@ -49,10 +49,10 @@ public:
 	void setWriteCompleteCallback(const WriteCompleteCallback& cb)
 	{ writeCompleteCallback_ = cb; }
 
-	TcpConnectionPtr getConn() {
-		if (state_) return connection_;
-		else return NULL;
-	}
+	void setCloseCallback(const CloseCallback cb)
+	{ closeCallback_ = cb; }
+
+	TcpConnectionPtr getConn();
 
 	void *getPair() { return pair_; }
 	void setPair(void *pair) { pair_ = pair; } 
@@ -66,6 +66,7 @@ private:
 	ConnectionCallback connectionCallback_;
 	MessageCallback messageCallback_;
 	WriteCompleteCallback writeCompleteCallback_;
+	CloseCallback closeCallback_;
 	bool retry_;   // atmoic
 	bool connect_; // atomic
 	bool state_;

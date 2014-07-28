@@ -38,6 +38,8 @@ public:
 
 	void shutdownWrite();
 
+	void shutdownRead();
+
 	void setTcpNoDelay(bool on);
 
 	void setKeepAlive(bool on);

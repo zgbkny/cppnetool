@@ -19,6 +19,8 @@ public:
 		std::swap(microSecondsSinceEpoch_, that.microSecondsSinceEpoch_);
 	}
 
+	void setNow();
+
 	std::string toString() const;
 	std::string toFormattedString() const;
 

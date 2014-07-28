@@ -48,6 +48,11 @@ void Socket::shutdownWrite()
 	sockets::shutdownWrite(sockfd_);
 }
 
+void Socket::shutdownRead()
+{
+	sockets::shutdownRead(sockfd_);
+}
+
 void Socket::setTcpNoDelay(bool on)
 {
 	int optval = on ? 1 : 0;
